@@ -41,15 +41,15 @@
   <pic>0</pic>
   <cov>0</cov>
   <nofloat>0</nofloat>
-  <Dversion>2.043</Dversion>
+  <Dversion>2</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
   <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
-  <imppath />
+  <imppath>../Fuji-D</imppath>
   <fileImppath />
-  <outdir>$(ConfigurationName)</outdir>
-  <objdir>$(OutDir)</objdir>
+  <outdir>bin</outdir>
+  <objdir>intermediate\$(ConfigurationName)</objdir>
   <objname />
   <libname />
   <doDocComments>0</doDocComments>
@@ -86,10 +86,10 @@
   <libpaths />
   <deffile />
   <resfile />
-  <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <exefile>$(OutDir)\$(ProjectName)_$(ConfigurationName).exe</exefile>
   <additionalOptions />
   <preBuildCommand />
-  <postBuildCommand />
+  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Debug.dll .\bin</postBuildCommand>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Config name="Release" platform="Win32">
@@ -133,15 +133,15 @@
   <pic>0</pic>
   <cov>0</cov>
   <nofloat>0</nofloat>
-  <Dversion>2.043</Dversion>
+  <Dversion>2</Dversion>
   <ignoreUnsupportedPragmas>0</ignoreUnsupportedPragmas>
   <compiler>0</compiler>
   <otherDMD>0</otherDMD>
   <program>$(DMDInstallDir)windows\bin\dmd.exe</program>
-  <imppath />
+  <imppath>..\Fuji-D</imppath>
   <fileImppath />
-  <outdir>$(ConfigurationName)</outdir>
-  <objdir>$(OutDir)</objdir>
+  <outdir>bin</outdir>
+  <objdir>intermediate\$(ConfigurationName)</objdir>
   <objname />
   <libname />
   <doDocComments>0</doDocComments>
@@ -178,14 +178,40 @@
   <libpaths />
   <deffile />
   <resfile />
-  <exefile>$(OutDir)\$(ProjectName).exe</exefile>
+  <exefile>$(OutDir)\$(ProjectName)_$(ConfigurationName).exe</exefile>
   <additionalOptions />
   <preBuildCommand />
-  <postBuildCommand />
+  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Debug.dll .\bin</postBuildCommand>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="Stache">
+  <Folder name="fuji">
+   <Folder name="fs">
+    <File path="..\Fuji-D\fuji\fs\native.d" />
+   </Folder>
+   <File path="..\Fuji-D\fuji\dbg.d" />
+   <File path="..\Fuji-D\fuji\display.d" />
+   <File path="..\Fuji-D\fuji\filesystem.d" />
+   <File path="..\Fuji-D\fuji\font.d" />
+   <File path="..\Fuji-D\fuji\fuji.d" />
+   <File path="..\Fuji-D\fuji\material.d" />
+   <File path="..\Fuji-D\fuji\matrix.d" />
+   <File path="..\Fuji-D\fuji\primitive.d" />
+   <File path="..\Fuji-D\fuji\render.d" />
+   <File path="..\Fuji-D\fuji\system.d" />
+   <File path="..\Fuji-D\fuji\texture.d" />
+   <File path="..\Fuji-D\fuji\types.d" />
+   <File path="..\Fuji-D\fuji\vector.d" />
+   <File path="..\Fuji-D\fuji\view.d" />
+  </Folder>
   <Folder name="source">
+   <Folder name="entity">
+    <File path="source\entity\entity.d" />
+   </Folder>
+   <Folder name="util">
+    <File path="source\util\event.d" />
+   </Folder>
+   <File path="source\game.d" />
    <File path="source\winmain.d" />
   </Folder>
  </Folder>

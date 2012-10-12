@@ -10,4 +10,14 @@
 *.lai
 *.la
 *.a
-intermediate
+*/intermediate/*
+*.dll
+*/ipch/*
+*.suo
+*.opensdf
+*.sdf
+*.obj
+*.exe
+*.exe_cv
+*.pdb
+*.map

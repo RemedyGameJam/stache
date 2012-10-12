@@ -1,7 +1,11 @@
-module winmain;
+module stache.winmain;
 
 import core.runtime;
 import core.sys.windows.windows;
+
+import fuji.system;
+
+import stache.game;
 
 extern (Windows)
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -33,6 +37,18 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     /* ... insert user code here ... */
-    throw new Exception("not implemented");
-    return 0;
+//    throw new Exception("not implemented");
+
+	Game game = Game.Instance;
+
+	game.mfInitParams.hInstance = hInstance;
+	game.mfInitParams.pCommandLine = lpCmdLine;
+
+	MFSystem_RegisterSystemCallback(MFCallback.FileSystemInit, &Game.Static_InitFileSystem);
+	MFSystem_RegisterSystemCallback(MFCallback.InitDone, &Game.Static_Init);
+	MFSystem_RegisterSystemCallback(MFCallback.Deinit, &Game.Static_Deinit);
+	MFSystem_RegisterSystemCallback(MFCallback.Update, &Game.Static_Update);
+	MFSystem_RegisterSystemCallback(MFCallback.Draw, &Game.Static_Draw);
+
+	return MFMain(game.mfInitParams);
 }
