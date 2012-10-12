@@ -196,6 +196,7 @@
    <File path="..\Fuji-D\fuji\fuji.d" />
    <File path="..\Fuji-D\fuji\material.d" />
    <File path="..\Fuji-D\fuji\matrix.d" />
+   <File path="..\Fuji-D\fuji\model.d" />
    <File path="..\Fuji-D\fuji\primitive.d" />
    <File path="..\Fuji-D\fuji\render.d" />
    <File path="..\Fuji-D\fuji\system.d" />
