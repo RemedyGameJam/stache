@@ -1,10 +1,15 @@
 module stache.game;
 
+import fuji.fuji;
 import fuji.system;
 import fuji.filesystem;
 import fuji.fs.native;
 
 import fuji.render;
+import fuji.material;
+import fuji.primitive;
+import fuji.view;
+import fuji.matrix;
 
 class Game
 {
@@ -13,7 +18,7 @@ class Game
 		instance = this;
 	}
 
-	static void InitFileSystem()
+	void InitFileSystem()
 	{
 		MFFileSystemHandle hNative = MFFileSystem_GetInternalFileSystemHandle(MFFileSystemHandles.NativeFileSystem);
 		MFMountDataNative mountData;
@@ -25,30 +30,61 @@ class Game
 		MFFileSystem_Mount(hNative, mountData);
 	}
 
-	static void Init()
+	void Init()
+	{
+		mattDamon = MFMaterial_Create("MattDamon");
+	}
+
+	void Deinit()
 	{
 		int foo = 0;
 	}
 
-	static void Deinit()
+	void Update()
 	{
 		int foo = 0;
 	}
 
-	static void Update()
+	void Draw()
 	{
-		int foo = 0;
-	}
-
-	static void Draw()
-	{
-		MFRenderer_SetClearColour(1.0, 0.0, 1.0, 1.0);
+		MFRenderer_SetClearColour(0.1, 0.0, 0.1, 1.0);
 		MFRenderer_ClearScreen(MFClearScreenFlags.All);
 
+		MFView_Push();
+		{
+			float x = MFDegrees(cast(float)60.0f);
+			MFView_ConfigureProjection(x, 0.01, 100000);
+			MFView_SetAspectRatio(mfInitParams.display.displayRect.width / mfInitParams.display.displayRect.height);
+			MFView_SetProjection();
+
+			MFView_SetCameraMatrix(MFMatrix.identity);
+
+			MFMaterial_SetMaterial(mattDamon);
+
+			MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
+			MFBegin(4);
+			{
+				MFSetTexCoord1(0, 1);
+				MFSetPosition(-1, -1, 2);
+
+				MFSetTexCoord1(0, 0);
+				MFSetPosition(-1, 1, 2);
+
+				MFSetTexCoord1(1, 1);
+				MFSetPosition(1, -1, 2);
+
+				MFSetTexCoord1(1, 0);
+				MFSetPosition(1, 1, 2);
+			}
+			MFEnd();
+
+		}
+		MFView_Pop();
 	}
 
 	MFInitParams mfInitParams;
 
+	MFMaterial* mattDamon;
 
 	///
 	private static Game instance;
