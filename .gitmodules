@@ -1,0 +1,6 @@
+[submodule "Fuji"]
+	path = Fuji
+	url = https://github.com/TurkeyMan/fuji.git
+[submodule "Fuji-D"]
+	path = Fuji-D
+	url = https://github.com/TurkeyMan/fuji-d.git
