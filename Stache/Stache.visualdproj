@@ -209,6 +209,12 @@
    <Folder name="entity">
     <File path="source\entity\entity.d" />
    </Folder>
+   <Folder name="thinkers">
+    <File path="source\thinkers\localplayer.d" />
+   </Folder>
+   <Folder name="interface">
+    <File path="source\interface\thinker.d" />
+   </Folder>
    <Folder name="util">
     <File path="source\util\event.d" />
    </Folder>

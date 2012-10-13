@@ -52,7 +52,7 @@ class Game
 
 		MFView_Push();
 		{
-			float x = MFDegrees(cast(float)60.0f);
+			float x = MFDeg2Rad!60;
 			MFView_ConfigureProjection(x, 0.01, 100000);
 			MFView_SetAspectRatio(mfInitParams.display.displayRect.width / mfInitParams.display.displayRect.height);
 			MFView_SetProjection();
