@@ -212,12 +212,13 @@
    <File path="..\Fuji-D\fuji\view.d" />
   </Folder>
   <Folder name="source">
+   <Folder name="camera">
+    <File path="source\camera\battlecamera.d" />
+    <File path="source\camera\camera.d" />
+   </Folder>
    <Folder name="entity">
     <File path="source\entity\combatant.d" />
     <File path="source\entity\stache.d" />
-   </Folder>
-   <Folder name="camera">
-    <File path="source\camera\camera.d" />
    </Folder>
    <Folder name="interface">
     <File path="source\interface\collider.d" />

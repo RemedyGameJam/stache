@@ -10,6 +10,8 @@ import std.xml;
 import std.string;
 import std.conv;
 
+import stache.battlecamera;
+
 import stache.i.statemachine;
 import stache.game;
 
@@ -25,6 +27,8 @@ import stache.i.collider;
 
 class InGameState : IState
 {
+	BattleCamera camera;
+
 	void OnAdd(StateMachine statemachine)
 	{
 		owner = statemachine;
@@ -33,6 +37,8 @@ class InGameState : IState
 	void OnEnter()
 	{
 		collision = new CollisionManager;
+
+		camera = new BattleCamera;
 
 		size_t length;
 		const(char*) rawData = MFFileSystem_Load("apachearena.xml", &length, false);
@@ -53,6 +59,9 @@ class InGameState : IState
 
 		collision.PlaneDimensions = dimensions;
 
+		postUpdateEvent.subscribe(&camera.OnPostUpdate);
+		resetEvent.subscribe(&camera.OnReset);
+
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
@@ -66,6 +75,7 @@ class InGameState : IState
 			MFMaterial_Destroy(mat.mat);
 		}
 
+		camera = null;
 		collision = null;
 	}
 
@@ -89,17 +99,7 @@ class InGameState : IState
 
 		MFView_Push();
 		{
-			float x = MFDeg2Rad!60;
-			MFView_ConfigureProjection(x, 0.01, 100000);
-			// TODO: Nasty singletonses
-			float ratio = Game.Instance.mfInitParams.display.displayRect.width / Game.Instance.mfInitParams.display.displayRect.height;
-			MFView_SetAspectRatio(ratio);
-			MFView_SetProjection();
-
-			MFMatrix mat;
-
-			mat.t = MFVector(5, 2, 0, 1);
-			MFView_SetCameraMatrix(mat);
+			camera.Apply();
 
 			renderWorldEvent();
 
@@ -298,6 +298,8 @@ class InGameState : IState
 		}
 
 		thinkers ~= thinker;
+
+		camera.AddTrackedEntity(combatant);
 	}
 
 	void AddCollider(ICollider collider)

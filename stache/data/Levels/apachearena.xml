@@ -9,10 +9,10 @@
       </surfaces>
     </properties>
     <entities>
-      <entity type="Combatant" name="Player1" x="1" z="10" />
-      <entity type="Combatant" name="Player2" x="9" z="10" />
-      <entity type="Combatant" name="Player3" x="1" z="90" />
-      <entity type="Combatant" name="Player4" x="9" z="90" />
+      <entity type="Combatant" name="Player1" x="40" z="3" />
+      <entity type="Combatant" name="Player2" x="60" z="3" />
+      <entity type="Combatant" name="Player3" x="40" z="27" />
+      <entity type="Combatant" name="Player4" x="60" z="27" />
       <entity type="PaiMei" name="Judge" />
     </entities>
   </arena>
