@@ -1,25 +1,27 @@
 module stache.states.ingamestate;
 
+import fuji.filesystem;
+import fuji.render;
+import fuji.matrix;
+import fuji.material;
+import fuji.primitive;
+
+import std.xml;
 import std.string;
+import std.conv;
 
 import stache.i.statemachine;
 import stache.game;
 
-import fuji.render;
-import fuji.matrix;
-
 import stache.util.eventtypes;
+
 import stache.i.entity;
-
 import stache.entity.combatant;
-
-import fuji.filesystem;
-
-import std.xml;
 
 import stache.thinkers.localplayer;
 import stache.thinkers.nullthinker;
 
+import stache.i.collider;
 
 class InGameState : IState
 {
@@ -30,6 +32,8 @@ class InGameState : IState
 
 	void OnEnter()
 	{
+		collision = new CollisionManager;
+
 		size_t length;
 		const(char*) rawData = MFFileSystem_Load("apachearena.xml", &length, false);
 
@@ -47,6 +51,8 @@ class InGameState : IState
 
 		ParseArena(doc);
 
+		collision.PlaneDimensions = dimensions;
+
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
@@ -55,12 +61,20 @@ class InGameState : IState
 
 	void OnExit()
 	{
+		foreach(mat; materials)
+		{
+			MFMaterial_Destroy(mat.mat);
+		}
+
+		collision = null;
 	}
 
 	void OnUpdate()
 	{
 		thinkEvent();
 		updateEvent();
+		collision.OnUpdate();
+		postUpdateEvent();
 	}
 
 	@property StateMachine Owner() { return owner; }
@@ -85,10 +99,70 @@ class InGameState : IState
 			MFMatrix mat;
 
 			mat.t = MFVector(5, 2, 0, 1);
-
 			MFView_SetCameraMatrix(mat);
 
 			renderWorldEvent();
+
+			MFMaterial_SetMaterial(materials["floor"].mat);
+
+			MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
+			MFMatrix ident = MFMatrix.identity;
+
+			MFSetMatrix(ident);
+
+			foreach(offsetX; -3 .. 3)
+			{
+				foreach(offsetZ; -3 .. 3)
+				{
+					float xVal = dimensions.x * offsetX;
+					float zVal = dimensions.z * offsetZ;
+
+					MFBegin(4);
+					{
+						MFSetTexCoord1(0, 1);
+						MFSetPosition(xVal, 0, zVal);
+
+						MFSetTexCoord1(0, 0);
+						MFSetPosition(xVal, 0, zVal + dimensions.z);
+
+						MFSetTexCoord1(1, 1);
+						MFSetPosition(xVal + dimensions.x, 0, zVal);
+
+						MFSetTexCoord1(1, 0);
+						MFSetPosition(xVal + dimensions.x, 0, zVal + dimensions.z);
+					}
+					MFEnd();
+				}
+			}
+
+			MFMaterial_SetMaterial(materials["backwall"].mat);
+
+			MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
+
+			foreach(offsetX; -3 .. 3)
+			{
+				foreach(offsetY; 0 .. 2)
+				{
+					float xVal = dimensions.x * offsetX;
+					float yVal = dimensions.x * offsetY;
+
+					MFBegin(4);
+					{
+						MFSetTexCoord1(0, 1);
+						MFSetPosition(xVal, yVal, dimensions.z);
+
+						MFSetTexCoord1(0, 0);
+						MFSetPosition(xVal, yVal + dimensions.x, dimensions.z);
+
+						MFSetTexCoord1(1, 1);
+						MFSetPosition(xVal + dimensions.x, yVal, dimensions.z);
+
+						MFSetTexCoord1(1, 0);
+						MFSetPosition(xVal + dimensions.x, yVal + dimensions.x, dimensions.z);
+					}
+					MFEnd();
+				}
+			}
 		}
 		MFView_Pop();
 	}
@@ -117,10 +191,41 @@ class InGameState : IState
 				entitiesTag.parse();
 			};
 
+			arenaTag.onStartTag["properties"] = (ElementParser propertiesTag)
+			{
+				propertiesTag.onStartTag["dimensions"] = (ElementParser dimensionsTag)
+				{
+					dimensions.x = to!float(dimensionsTag.tag.attr["x"]);
+					dimensions.z = to!float(dimensionsTag.tag.attr["z"]);
+
+					dimensionsTag.parse();
+				};
+
+				propertiesTag.onStartTag["surfaces"] = (ElementParser surfacesTag)
+				{
+					surfacesTag.onStartTag["surface"] = &CreateSurface;
+
+					surfacesTag.parse();
+				};
+
+				propertiesTag.parse();
+			};
+
 			arenaTag.parse();
 		};
 
 		parser.parse();
+	}
+
+	void CreateSurface(ElementParser surfacesTag)
+	{
+		string type = surfacesTag.tag.attr["type"];
+		string material = surfacesTag.tag.attr["material"];
+
+		MaterialWrap newMat;
+		newMat.mat = MFMaterial_Create(material.toStringz);
+
+		materials[type] = newMat;
 	}
 
 	IEntity CreateEntity(string type, ElementParser parser = null)
@@ -144,6 +249,10 @@ class InGameState : IState
 			{
 				AddCombatant(cast(Combatant) entity);
 			}
+			if (cast(ICollider) entity !is null)
+			{
+				AddCollider(cast(ICollider) entity);
+			}
 		}
 
 		return cast(IEntity) entity;
@@ -154,7 +263,10 @@ class InGameState : IState
 		resetEvent.subscribe(&entity.OnReset);
 
 		if (entity.CanUpdate)
+		{
 			updateEvent.subscribe(&entity.OnUpdate);
+			postUpdateEvent.subscribe(&entity.OnPostUpdate);
+		}
 
 		entities ~= entity;
 	}
@@ -188,14 +300,33 @@ class InGameState : IState
 		thinkers ~= thinker;
 	}
 
+	void AddCollider(ICollider collider)
+	{
+		colliders ~= collider;
+		collision.AddCollider(collider);
+	}
+
 	private VoidEvent resetEvent;
 
 	private VoidEvent thinkEvent;
 	private VoidEvent updateEvent;
+	private VoidEvent postUpdateEvent;
 
 	private VoidEvent renderWorldEvent;
 	private MFRectEvent renderGUIEvent;
 
 	private IEntity[] entities;
 	private IThinker[] thinkers;
+	private ICollider[] colliders;
+
+	private MFVector dimensions;
+
+	struct MaterialWrap
+	{
+		MFMaterial* mat;
+	}
+
+	private MaterialWrap[string] materials;
+
+	private CollisionManager collision;
 }

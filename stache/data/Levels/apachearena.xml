@@ -2,7 +2,11 @@
 <root>
   <arena>
     <properties>
-      <dimensions x="100" z="100" />
+      <dimensions x="100" z="30" />
+      <surfaces>
+        <surface type="floor" material="MattDamon" />
+        <surface type="backwall" material="MattDamon" />
+      </surfaces>
     </properties>
     <entities>
       <entity type="Combatant" name="Player1" x="1" z="10" />
