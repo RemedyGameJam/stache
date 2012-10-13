@@ -13,7 +13,7 @@ class LocalPlayer : IThinker
 		inputDeviceID = -1;
 	}
 
-	bool OnAssign(ISheeple sheeple)
+	bool OnAssign(ISheeple sheepWantsToFollow)
 	{
 		foreach (devID; 0 .. devicesClaimed.length)
 		{
@@ -27,7 +27,7 @@ class LocalPlayer : IThinker
 
 		if (Valid)
 		{
-			sheeple = sheeple;
+			sheeple = sheepWantsToFollow;
 		}
 
 		return Valid;

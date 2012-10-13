@@ -8,7 +8,6 @@ interface IEntity
 	void OnCreate(ElementParser element);
 	void OnReset();
 	void OnDestroy();
-	void OnLoadDone();
 	void OnUpdate();
 
 	@property bool CanUpdate();

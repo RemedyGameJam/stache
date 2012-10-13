@@ -19,6 +19,7 @@ interface ISheeple
 
 	@property bool IsAttacking();
 	@property bool IsBlocking();
+	@property bool IsRunning();
 }
 
 interface IThinker

@@ -1,5 +1,6 @@
 module stache.entity.combatant;
 
+import fuji.system;
 import fuji.vector;
 import fuji.material;
 import fuji.primitive;
@@ -13,6 +14,8 @@ import std.conv;
 class Combatant : ISheeple, IEntity, IRenderable
 {
 	const int DefaultHealth = 100;
+	const float DefaultMoveSpeed = 15;
+	const float DefaultMoveSpeedRunModifier = 1.65;
 
 	struct State
 	{
@@ -27,6 +30,8 @@ class Combatant : ISheeple, IEntity, IRenderable
 		{
 			initialState.transform.t.x = to!float(element.tag.attr["x"]);
 			initialState.transform.t.z = to!float(element.tag.attr["z"]);
+
+			name = element.tag.attr["name"];
 		}
 
 		mattDamon = MFMaterial_Create("MattDamon");
@@ -41,17 +46,17 @@ class Combatant : ISheeple, IEntity, IRenderable
 	{
 	}
 
-	void OnLoadDone()
-	{
-	}
-
 	void OnUpdate()
 	{
+		Position = Position + moveDirection * MFSystem_GetTimeDelta();
 	}
 
 	@property bool CanUpdate() { return true; }
 	@property MFMatrix Transform() { return state.transform; }
 	@property string Name() { return name; }
+
+	private @property Position() { return state.transform.t; }
+	private @property Position(MFVector newPos) { return (state.transform.t = newPos); }
 
 	private State	initialState,
 					state;
@@ -81,6 +86,7 @@ class Combatant : ISheeple, IEntity, IRenderable
 
 	void OnMove(MFVector direction)
 	{
+		moveDirection = direction * MoveSpeed;
 	}
 
 	@property bool CanMove() { return true; }
@@ -91,6 +97,11 @@ class Combatant : ISheeple, IEntity, IRenderable
 
 	@property bool IsAttacking() { return false; }
 	@property bool IsBlocking() { return false; }
+	@property bool IsRunning() { return false; }
+
+	private @property float MoveSpeed() { return DefaultMoveSpeed * (IsRunning ? DefaultMoveSpeedRunModifier : 1); }
+
+	MFVector moveDirection;
 
 
 	///IRenderable

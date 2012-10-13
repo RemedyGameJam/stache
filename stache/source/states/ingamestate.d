@@ -17,6 +17,10 @@ import fuji.filesystem;
 
 import std.xml;
 
+import stache.thinkers.localplayer;
+import stache.thinkers.nullthinker;
+
+
 class InGameState : IState
 {
 	void OnAdd(StateMachine statemachine)
@@ -46,10 +50,7 @@ class InGameState : IState
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
-		foreach(ent; entities)
-		{
-			ent.OnReset();
-		}
+		resetEvent();
 	}
 
 	void OnExit()
@@ -58,6 +59,7 @@ class InGameState : IState
 
 	void OnUpdate()
 	{
+		thinkEvent();
 		updateEvent();
 	}
 
@@ -80,7 +82,11 @@ class InGameState : IState
 			MFView_SetAspectRatio(ratio);
 			MFView_SetProjection();
 
-			MFView_SetCameraMatrix(MFMatrix.identity);
+			MFMatrix mat;
+
+			mat.t = MFVector(5, 2, 0, 1);
+
+			MFView_SetCameraMatrix(mat);
 
 			renderWorldEvent();
 		}
@@ -134,7 +140,7 @@ class InGameState : IState
 			{
 				AddRenderable(cast(IRenderable) entity);
 			}
-			if (is(entity == Combatant))
+			if (cast(Combatant) entity !is null)
 			{
 				AddCombatant(cast(Combatant) entity);
 			}
@@ -145,6 +151,8 @@ class InGameState : IState
 
 	void AddEntity(IEntity entity)
 	{
+		resetEvent.subscribe(&entity.OnReset);
+
 		if (entity.CanUpdate)
 			updateEvent.subscribe(&entity.OnUpdate);
 
@@ -161,11 +169,33 @@ class InGameState : IState
 
 	void AddCombatant(Combatant combatant)
 	{
+		IThinker thinker;
+
+		if (combatant.Name == "Player1")
+		{
+			thinker = new LocalPlayer;
+		}
+		else
+		{
+			thinker = new NullThinker;
+		}
+
+		if (thinker.OnAssign(combatant))
+		{
+			thinkEvent.subscribe(&thinker.OnThink);
+		}
+
+		thinkers ~= thinker;
 	}
 
+	private VoidEvent resetEvent;
+
+	private VoidEvent thinkEvent;
 	private VoidEvent updateEvent;
+
 	private VoidEvent renderWorldEvent;
 	private MFRectEvent renderGUIEvent;
 
 	private IEntity[] entities;
+	private IThinker[] thinkers;
 }
