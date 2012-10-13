@@ -189,6 +189,10 @@
    <Folder name="fs">
     <File path="..\Fuji-D\fuji\fs\native.d" />
    </Folder>
+   <File path="..\Fuji-D\fuji\animation.d" />
+   <File path="..\Fuji-D\fuji\animscript.d" />
+   <File path="..\Fuji-D\fuji\boundingvolume.d" />
+   <File path="..\Fuji-D\fuji\collision.d" />
    <File path="..\Fuji-D\fuji\dbg.d" />
    <File path="..\Fuji-D\fuji\display.d" />
    <File path="..\Fuji-D\fuji\filesystem.d" />
@@ -210,8 +214,10 @@
   <Folder name="source">
    <Folder name="entity">
     <File path="source\entity\combatant.d" />
+    <File path="source\entity\stache.d" />
    </Folder>
    <Folder name="interface">
+    <File path="source\interface\collider.d" />
     <File path="source\entity\entity.d" />
     <File path="source\interface\renderable.d" />
     <File path="source\interface\statemachine.d" />
