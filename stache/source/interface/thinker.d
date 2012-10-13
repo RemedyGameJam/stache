@@ -5,14 +5,26 @@ import fuji.vector;
 interface ISheeple
 {
 	void OnLightAttack();
-	void OnHeavyAttach();
+	void OnHeavyAttack();
 	void OnSpecialAttack();
+	void OnBlock();
+	void OnUnblock();
 	void OnMove(MFVector direction);
+
+	@property bool CanMove();
+	@property bool CanAttack();
+	@property bool CanBlock();
+
+	@property int Health();
+
+	@property bool IsAttacking();
+	@property bool IsBlocking();
 }
 
 interface IThinker
 {
-	void OnAssign(ISheeple sheeple);
+	bool OnAssign(ISheeple sheeple);
 	void OnThink();
-	void OnIssueCommand();
+
+	@property bool Valid();
 }
