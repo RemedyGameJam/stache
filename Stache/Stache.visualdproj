@@ -194,11 +194,13 @@
    <File path="..\Fuji-D\fuji\filesystem.d" />
    <File path="..\Fuji-D\fuji\font.d" />
    <File path="..\Fuji-D\fuji\fuji.d" />
+   <File path="..\Fuji-D\fuji\input.d" />
    <File path="..\Fuji-D\fuji\material.d" />
    <File path="..\Fuji-D\fuji\matrix.d" />
    <File path="..\Fuji-D\fuji\model.d" />
    <File path="..\Fuji-D\fuji\primitive.d" />
    <File path="..\Fuji-D\fuji\render.d" />
+   <File path="..\Fuji-D\fuji\sound.d" />
    <File path="..\Fuji-D\fuji\system.d" />
    <File path="..\Fuji-D\fuji\texture.d" />
    <File path="..\Fuji-D\fuji\types.d" />
