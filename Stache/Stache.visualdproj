@@ -216,6 +216,9 @@
     <File path="source\entity\combatant.d" />
     <File path="source\entity\stache.d" />
    </Folder>
+   <Folder name="camera">
+    <File path="source\camera\camera.d" />
+   </Folder>
    <Folder name="interface">
     <File path="source\interface\collider.d" />
     <File path="source\entity\entity.d" />
