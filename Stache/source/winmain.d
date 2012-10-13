@@ -43,6 +43,7 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 
 	game.mfInitParams.hInstance = hInstance;
 	game.mfInitParams.pCommandLine = lpCmdLine;
+	game.mfInitParams.hideSystemInfo = false;
 
 	MFSystem_RegisterSystemCallback(MFCallback.FileSystemInit, &Game.Static_InitFileSystem);
 	MFSystem_RegisterSystemCallback(MFCallback.InitDone, &Game.Static_Init);

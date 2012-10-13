@@ -209,13 +209,20 @@
   </Folder>
   <Folder name="source">
    <Folder name="entity">
+    <File path="source\entity\combatant.d" />
+   </Folder>
+   <Folder name="states">
+    <File path="source\states\loadingscreenstate.d" />
+    <File path="source\states\mainmenustate.d" />
+   </Folder>
+   <Folder name="interface">
     <File path="source\entity\entity.d" />
+    <File path="source\interface\renderable.d" />
+    <File path="source\interface\statemachine.d" />
+    <File path="source\interface\thinker.d" />
    </Folder>
    <Folder name="thinkers">
     <File path="source\thinkers\localplayer.d" />
-   </Folder>
-   <Folder name="interface">
-    <File path="source\interface\thinker.d" />
    </Folder>
    <Folder name="util">
     <File path="source\util\event.d" />
