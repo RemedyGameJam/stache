@@ -43,7 +43,10 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 
 	game.mfInitParams.hInstance = hInstance;
 	game.mfInitParams.pCommandLine = lpCmdLine;
-	game.mfInitParams.hideSystemInfo = false;
+	game.mfInitParams.hideSystemInfo = true;
+	game.mfInitParams.display.displayRect.x = 100;
+	game.mfInitParams.display.displayRect.y = 100;
+	game.mfInitParams.pAppTitle = "Matt Damon presents: Stache!".ptr;
 
 	MFSystem_RegisterSystemCallback(MFCallback.FileSystemInit, &Game.Static_InitFileSystem);
 	MFSystem_RegisterSystemCallback(MFCallback.InitDone, &Game.Static_Init);

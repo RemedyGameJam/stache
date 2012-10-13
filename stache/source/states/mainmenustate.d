@@ -5,6 +5,7 @@ import stache.i.statemachine;
 
 import fuji.render;
 import fuji.matrix;
+import fuji.font;
 
 class MainMenuState : IState
 {
@@ -15,10 +16,14 @@ class MainMenuState : IState
 
 	void OnEnter()
 	{
+		arial = MFFont_Create("Arial");
+
+		halfMessageWidth = MFFont_GetStringWidth(arial, message, messageHeight, 0, -1, null) * 0.5;
 	}
 
 	void OnExit()
 	{
+		MFFont_Destroy(arial);
 	}
 
 	void OnUpdate()
@@ -52,8 +57,16 @@ class MainMenuState : IState
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
+		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 515, messageHeight, MFVector(0, 0, 0, 1), "Press START to win!");
+		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth - 1, 514, messageHeight, MFVector(1, 1, 1, 1), "Press START to win!");
 	}
 
 	@property bool CanRenderWorld() { return true; }
 	@property bool CanRenderGUI() { return true; }
+
+	private MFFont* arial;
+	private float halfMessageWidth;
+
+	const(char*) message = "Press START to win!";
+	const(float) messageHeight = 45;
 }

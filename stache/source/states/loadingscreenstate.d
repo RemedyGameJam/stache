@@ -24,6 +24,9 @@ class LoadingScreenState : IState, IRenderable
 	{
 		arial = MFFont_Create("Arial");
 		mattDamon = MFMaterial_Create("MattDamon");
+
+		halfMessageWidth = MFFont_GetStringWidth(arial, message, messageHeight, 0, -1, null) * 0.5;
+
 		elapsedTime = 0;
 	}
 
@@ -40,9 +43,9 @@ class LoadingScreenState : IState, IRenderable
 	{
 		elapsedTime += MFSystem_GetTimeDelta();
 
-		if (elapsedTime > 1.25f)
+		if (elapsedTime > 1.5f)
 		{
-			owner.SwitchState("mainmenu");
+			owner.SwitchState("ingame");
 		}
 	}
 
@@ -91,8 +94,8 @@ class LoadingScreenState : IState, IRenderable
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
-		MFFont_DrawText2f(arial, orthoRect.width * 0.3, 515, 45, MFVector(0, 0, 0, 1), "Powered by MATT DAMON!");
-		MFFont_DrawText2f(arial, orthoRect.width * 0.3 - 1, 514, 45, MFVector(1, 1, 1, 1), "Powered by MATT DAMON!");
+		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 515, messageHeight, MFVector(0, 0, 0, 1), message);
+		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth - 1, 514, messageHeight, MFVector(1, 1, 1, 1), message);
 	}
 
 	@property bool CanRenderWorld() { return true; }
@@ -104,4 +107,9 @@ class LoadingScreenState : IState, IRenderable
 	private MFMaterial* mattDamon;
 	private float elapsedTime;
 	private MFFont* arial;
+
+	private float halfMessageWidth;
+
+	const(char*) message = "Powered by MATT DAMON!";
+	const(float) messageHeight = 45;
 }

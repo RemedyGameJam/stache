@@ -1,5 +1,7 @@
 module stache.util.event;
 
+import std.algorithm;
+
 struct EventTemplate( T... )
 {
 	alias void delegate( T ) Delegate;
@@ -23,7 +25,9 @@ struct EventTemplate( T... )
 	void subscribe( Delegate eventHandler ) { m_subscribers ~= eventHandler; }
 	void unsubscribe( Delegate eventHandler )
 	{
-		// not so simple...?
+		int index = countUntil(m_subscribers, eventHandler);
+		if (index != -1)
+			remove(m_subscribers, index);
 	}
 
 	Delegate getDelegate() { return &this.opCall; } 

@@ -14,6 +14,7 @@ import fuji.matrix;
 import stache.i.statemachine;
 import stache.states.loadingscreenstate;
 import stache.states.mainmenustate;
+import stache.states.ingamestate;
 
 class Game
 {
@@ -39,12 +40,14 @@ class Game
 	{
 		state.AddState("loading", new LoadingScreenState);
 		state.AddState("mainmenu", new MainMenuState);
+		state.AddState("ingame", new InGameState);
 
 		state.SwitchState("loading");
 	}
 
 	void Deinit()
 	{
+		state = null;
 	}
 
 	void Update()
@@ -79,6 +82,7 @@ class Game
 	static void Static_Deinit()
 	{
 		Instance.Deinit();
+		instance = null;
 	}
 
 	static void Static_Update()

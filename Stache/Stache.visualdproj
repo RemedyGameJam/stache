@@ -212,6 +212,7 @@
     <File path="source\entity\combatant.d" />
    </Folder>
    <Folder name="states">
+    <File path="source\states\ingamestate.d" />
     <File path="source\states\loadingscreenstate.d" />
     <File path="source\states\mainmenustate.d" />
    </Folder>
@@ -226,6 +227,7 @@
    </Folder>
    <Folder name="util">
     <File path="source\util\event.d" />
+    <File path="source\util\eventtypes.d" />
    </Folder>
    <File path="source\game.d" />
    <File path="source\winmain.d" />

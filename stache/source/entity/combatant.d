@@ -1,16 +1,40 @@
 module stache.entity.combatant;
 
 import fuji.vector;
+import fuji.material;
+import fuji.primitive;
 
 import stache.i.thinker;
 import stache.i.entity;
 import stache.i.renderable;
 
+import std.conv;
+
 class Combatant : ISheeple, IEntity, IRenderable
 {
-	/// IEntity
-	void OnCreate()
+	const int DefaultHealth = 100;
+
+	struct State
 	{
+		MFMatrix transform;
+		int health = DefaultHealth;
+	}
+
+	/// IEntity
+	void OnCreate(ElementParser element)
+	{
+		if (element !is null)
+		{
+			initialState.transform.t.x = to!float(element.tag.attr["x"]);
+			initialState.transform.t.z = to!float(element.tag.attr["z"]);
+		}
+
+		mattDamon = MFMaterial_Create("MattDamon");
+	}
+
+	void OnReset()
+	{
+		state = initialState;
 	}
 
 	void OnDestroy()
@@ -26,6 +50,13 @@ class Combatant : ISheeple, IEntity, IRenderable
 	}
 
 	@property bool CanUpdate() { return true; }
+	@property MFMatrix Transform() { return state.transform; }
+	@property string Name() { return name; }
+
+	private State	initialState,
+					state;
+
+	private string	name;
 
 	/// IThinker
 	void OnLightAttack()
@@ -56,7 +87,7 @@ class Combatant : ISheeple, IEntity, IRenderable
 	@property bool CanAttack() { return true; }
 	@property bool CanBlock() { return true; }
 
-	@property int Health() { return 100; }
+	@property int Health() { return state.health; }
 
 	@property bool IsAttacking() { return false; }
 	@property bool IsBlocking() { return false; }
@@ -65,6 +96,25 @@ class Combatant : ISheeple, IEntity, IRenderable
 	///IRenderable
 	void OnRenderWorld()
 	{
+		MFMaterial_SetMaterial(mattDamon);
+
+		MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
+		MFSetMatrix(state.transform);
+		MFBegin(4);
+		{
+			MFSetTexCoord1(0, 1);
+			MFSetPosition(-0.5, -0.5, 0);
+
+			MFSetTexCoord1(0, 0);
+			MFSetPosition(-0.5, 0.5, 0);
+
+			MFSetTexCoord1(1, 1);
+			MFSetPosition(0.5, -0.5, 0);
+
+			MFSetTexCoord1(1, 0);
+			MFSetPosition(0.5, 0.5, 0);
+		}
+		MFEnd();
 	}
 
 	void OnRenderGUI(MFRect orthoRect)
@@ -74,4 +124,5 @@ class Combatant : ISheeple, IEntity, IRenderable
 	@property bool CanRenderWorld() { return true; }
 	@property bool CanRenderGUI() { return false; }
 
+	MFMaterial* mattDamon;
 }
