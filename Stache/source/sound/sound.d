@@ -61,16 +61,21 @@ class SoundSet
 //		groups.
 	}
 
-	void Play(const(char[]) group)
+	float Play(const(char[]) group)
 	{
 		if(group !in groups)
-			return;
+			return 0;
 		if(groups[group].length == 0)
-			return;
+			return 0;
 
 		int i = uniform(0, groups[group].length);
 
+		MFSoundInfo info;
+		MFSound_GetSoundInfo(groups[group][i].sound, &info);
+
 		MFSound_Play(groups[group][i].sound, 0);
+
+		return cast(float)info.numSamples / cast(float)info.sampleRate;
 	}
 
 	struct Sound

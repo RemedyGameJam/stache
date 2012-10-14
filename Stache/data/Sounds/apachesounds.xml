@@ -7,5 +7,32 @@
     <group name="end">
       <sound file="round_end_gong" />
     </group>
+    <group name="player1">
+      <sound file="pai_mei_player_1" />
+    </group>
+    <group name="player2">
+      <sound file="pai_mei_player_2" />
+    </group>
+    <group name="player3">
+      <sound file="pai_mei_player_3" />
+    </group>
+    <group name="player4">
+      <sound file="pai_mei_player_4" />
+    </group>
+    <group name="winner">
+      <sound file="pai_mei_winner" />
+    </group>
+    <group name="rank1">
+      <sound file="pai_mei_your_kung_fu_is_good" />
+    </group>
+    <group name="rank2">
+      <sound file="pai_mei_very_good" />
+    </group>
+    <group name="rank3">
+      <sound file="pai_mei_practice_harder" />
+    </group>
+    <group name="loser">
+      <sound file="pai_mei_no_soup" />
+    </group>
   </soundset>
 </root>
