@@ -80,7 +80,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		model = MFModel_Create("Hogan_walk_static");
 
-		soundSet = new SoundSet("s1");
+		static int x = 0;
+		soundSet = new SoundSet("player" ~ to!string((1 - x++) + 1));
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)

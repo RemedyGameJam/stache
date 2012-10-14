@@ -8,7 +8,7 @@
         <surface type="backwall" material="MattDamon" />
       </surfaces>
       <sounds file="apachesounds" />
-      <music track="m1" />
+      <music track="music" />
     </properties>
     <entities>
       <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="40" z="3" facing="right" />

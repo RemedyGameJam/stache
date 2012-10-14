@@ -1,0 +1,29 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<root>
+  <soundset>
+    <group name="light">
+      <sound file="character_a_miss_001" />
+      <sound file="character_a_miss_002" />
+      <sound file="character_a_miss_003" />
+      <sound file="character_a_miss_004" />
+    </group>
+    <group name="heavy">
+      <sound file="character_a_attack_001" />
+      <sound file="character_a_attack_002" />
+      <sound file="character_a_attack_003" />
+      <sound file="character_a_attack_004" />
+      <sound file="character_a_attack_005" />
+      <sound file="character_a_attack_006" />
+    </group>
+    <group name="special">
+      <sound file="character_a_special_attack_001" />
+      <sound file="character_a_special_attack_002" />
+    </group>
+    <group name="hit">
+      <sound file="character_a_hit_001" />
+      <sound file="character_a_hit_002" />
+      <sound file="character_a_hit_003" />
+      <sound file="character_a_hit_004" />
+    </group>
+  </soundset>
+</root>
