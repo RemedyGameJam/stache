@@ -5,6 +5,17 @@
     <mesh name="walk2" filename="hogan_walk_02" />
     <mesh name="walk3" filename="hogan_walk_03" />
     <mesh name="walk4" filename="hogan_walk_04" />
+    <mesh name="walk5" filename="hogan_walk_05" />
+    <mesh name="walk6" filename="hogan_walk_06" />
+    <mesh name="walk7" filename="hogan_walk_07" />
+    <mesh name="walk8" filename="hogan_walk_08" />
+    <mesh name="walk9" filename="hogan_walk_09" />
+    <mesh name="walk10" filename="hogan_walk_10" />
+    <mesh name="walk11" filename="hogan_walk_11" />
+    <mesh name="walk12" filename="hogan_walk_12" />
+    <mesh name="walk13" filename="hogan_walk_13" />
+    <mesh name="walk14" filename="hogan_walk_14" />
+    <mesh name="walk15" filename="hogan_walk_15" />
     <mesh name="punch1" filename="hogan_punch_01" />
     <mesh name="punch2" filename="hogan_punch_02" />
   </meshes>
@@ -12,11 +23,22 @@
     <anim name="idle" time="100000" loop="0" default="1">
       <frame mesh="walk1" percent="1" />
     </anim>    
-    <anim name="walk" time="0.8" loop="1" default="0">
-      <frame mesh="walk1" percent="0.25" />
-      <frame mesh="walk2" percent="0.25" />
-      <frame mesh="walk3" percent="0.25" />
-      <frame mesh="walk4" percent="0.25" />
+    <anim name="walk" time="1" loop="1" default="0">
+      <frame mesh="walk1" percent="0.066666" />
+      <frame mesh="walk2" percent="0.066666" />
+      <frame mesh="walk3" percent="0.066666" />
+      <frame mesh="walk4" percent="0.066666" />
+      <frame mesh="walk5" percent="0.066666" />
+      <frame mesh="walk6" percent="0.066666" />
+      <frame mesh="walk7" percent="0.066666" />
+      <frame mesh="walk8" percent="0.066666" />
+      <frame mesh="walk9" percent="0.066666" />
+      <frame mesh="walk10" percent="0.066666" />
+      <frame mesh="walk11" percent="0.066666" />
+      <frame mesh="walk12" percent="0.066666" />
+      <frame mesh="walk13" percent="0.066666" />
+      <frame mesh="walk14" percent="0.066666" />
+      <frame mesh="walk15" percent="0.066667" />
     </anim>
     <anim name="light_wind" time="100" loop="0" default="0">
       <frame mesh="punch1" percent="1" />
