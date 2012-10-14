@@ -7,21 +7,30 @@ import fuji.input;
 
 class LocalPlayer : IThinker
 {
-	this()
+	this(int index)
 	{
+		playerIndex = index;
 		sheeple = null;
 		inputDeviceID = -1;
 	}
 
 	bool OnAssign(ISheeple sheepWantsToFollow)
 	{
-		foreach (devID; 0 .. devicesClaimed.length)
+		if (devicesClaimed[playerIndex] is null)
 		{
-			if (devicesClaimed[devID] is null)
+			devicesClaimed[playerIndex] = this;
+			inputDeviceID = playerIndex;
+		}
+		else
+		{
+			foreach (devID; 0 .. devicesClaimed.length)
 			{
-				devicesClaimed[devID] = this;
-				inputDeviceID = devID;
-				break;
+				if (devicesClaimed[devID] is null)
+				{
+					devicesClaimed[devID] = this;
+					inputDeviceID = devID;
+					break;
+				}
 			}
 		}
 
@@ -77,6 +86,7 @@ class LocalPlayer : IThinker
 
 	private ISheeple sheeple;
 	private int inputDeviceID;
+	private int playerIndex;
 
 	private static IThinker[] devicesClaimed = [ null, null, null, null ];
 }
