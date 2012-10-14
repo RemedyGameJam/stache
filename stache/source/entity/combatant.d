@@ -199,7 +199,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 							if (Facing == c.Facing || !c.IsBlocking)
 							{
-								float damageDealt = c.OnReceiveAttack(ActiveAttacks, AttackStrength);
+								float damageDealt = c.OnReceiveAttack(ActiveAttacks, strength);
 
 								state.damageDealt += damageDealt;
 							}

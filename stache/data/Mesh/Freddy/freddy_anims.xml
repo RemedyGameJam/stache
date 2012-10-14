@@ -1,0 +1,81 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<root>
+  <meshes>
+    <mesh name="walk1" filename="freddy_walk_01" />
+    <mesh name="walk2" filename="freddy_walk_02" />
+    <mesh name="walk3" filename="freddy_walk_03" />
+    <mesh name="walk4" filename="freddy_walk_04" />
+    <mesh name="walk5" filename="freddy_walk_05" />
+    <mesh name="walk6" filename="freddy_walk_06" />
+    <mesh name="walk7" filename="freddy_walk_07" />
+    <mesh name="walk8" filename="freddy_walk_08" />
+    <mesh name="walk9" filename="freddy_walk_09" />
+    <mesh name="walk10" filename="freddy_walk_10" />
+    <mesh name="walk11" filename="freddy_walk_11" />
+    <mesh name="walk12" filename="freddy_walk_12" />
+    <mesh name="walk13" filename="freddy_walk_13" />
+    <mesh name="walk14" filename="freddy_walk_14" />
+    <mesh name="walk15" filename="freddy_walk_15" />
+    <mesh name="death1" filename="freddy_death_01" />
+    <mesh name="death2" filename="freddy_death_02" />
+    <mesh name="death3" filename="freddy_death_03" />
+    <mesh name="fall1" filename="freddy_fall_01" />
+    <mesh name="fall2" filename="freddy_fall_02" />
+    <mesh name="fall3" filename="freddy_fall_03" />
+    <mesh name="idle1" filename="freddy_idle_01" />
+    <mesh name="idle2" filename="freddy_idle_02" />
+    <mesh name="slap1" filename="freddy_slap_01" />
+    <mesh name="slap2" filename="freddy_slap_02" />
+    <mesh name="punch1" filename="freddy_punch_01" />
+    <mesh name="punch2" filename="freddy_punch_02" />
+    <mesh name="special1" filename="freddy_special_01" />
+    <mesh name="special2" filename="freddy_special_02" />
+    <mesh name="special3" filename="freddy_special_03" />
+  </meshes>
+  <anims>
+    <anim name="idle" time="0.5" loop="1" default="1">
+      <frame mesh="idle1" percent="0.5" />
+      <frame mesh="idle2" percent="0.5" />
+    </anim>    
+    <anim name="walk" time="1" loop="1" default="0">
+      <frame mesh="walk1" percent="0.066666" />
+      <frame mesh="walk2" percent="0.066666" />
+      <frame mesh="walk3" percent="0.066666" />
+      <frame mesh="walk4" percent="0.066666" />
+      <frame mesh="walk5" percent="0.066666" />
+      <frame mesh="walk6" percent="0.066666" />
+      <frame mesh="walk7" percent="0.066666" />
+      <frame mesh="walk8" percent="0.066666" />
+      <frame mesh="walk9" percent="0.066666" />
+      <frame mesh="walk10" percent="0.066666" />
+      <frame mesh="walk11" percent="0.066666" />
+      <frame mesh="walk12" percent="0.066666" />
+      <frame mesh="walk13" percent="0.066666" />
+      <frame mesh="walk14" percent="0.066666" />
+      <frame mesh="walk15" percent="0.066667" />
+    </anim>
+    <anim name="light_wind" time="100" loop="0" default="0">
+      <frame mesh="slap1" percent="1" />
+    </anim>
+    <anim name="light_blow" time="100" loop="0" default="0">
+      <frame mesh="slap2" percent="1" />
+    </anim>
+    <anim name="heavy_wind" time="100" loop="0" default="0">
+      <frame mesh="punch1" percent="1" />
+    </anim>
+    <anim name="heavy_blow" time="100" loop="0" default="0">
+      <frame mesh="punch2" percent="1" />
+    </anim>
+    <anim name="special_wind" time="100" loop="0" default="0">
+      <frame mesh="special1" percent="1" />
+    </anim>
+    <anim name="special_blow" time="100" loop="0" default="0">
+      <frame mesh="special2" percent="1" />
+    </anim>
+    <anim name="death" time="0.5" loop="0" default="0">
+      <frame mesh="death1" percent="0.333333" />
+      <frame mesh="death2" percent="0.333333" />
+      <frame mesh="death3" percent="0.333333" />
+    </anim>    
+  </anims>
+</root>
