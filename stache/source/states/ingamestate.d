@@ -519,9 +519,12 @@ class InGameState : IState
 	{
 		IThinker thinker;
 
-		if (combatant.Name == "Player1")
+		if (toLower(combatant.Name[0 .. 6]) == "player")
 		{
-			thinker = new LocalPlayer;
+			char indexString = combatant.Name[6];
+
+			int index = to!int(indexString - 0x31);
+			thinker = new LocalPlayer(index);
 		}
 		else
 		{

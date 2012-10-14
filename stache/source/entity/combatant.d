@@ -6,7 +6,6 @@ import fuji.system;
 import fuji.vector;
 import fuji.material;
 import fuji.primitive;
-import fuji.model;
 
 import stache.i.thinker;
 import stache.i.entity;
@@ -40,9 +39,11 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		float health = DefaultHealth;
 		CombatantDirection facing = CombatantDirection.Left;
 		StacheEntity stache = null;
+		float damageDealt = 0;
 
 		ISheeple.Moves activeMoves = ISheeple.Moves.None;
 		float attackStrength = 0.0;
+		float attackBackStrength = 0.0;
 		float attackTimeTillHit = 0.0;
 		float attackTimeCooldown = 0.0;
 	}
@@ -78,8 +79,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		mattDamon = MFMaterial_Create("MattDamon");
 
-		model = MFModel_Create("Hogan_walk_static");
-
 		static int x = 0;
 		soundSet = new SoundSet("player" ~ to!string((1 - x++) + 1));
 	}
@@ -98,6 +97,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		if (stache !is null)
 		{
 			initialState.stache = stache;
+			stache.OnResolveAttach(this);
 		}
 		else
 		{
@@ -113,7 +113,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnDestroy()
 	{
-		MFModel_Destroy(model);
 		MFMaterial_Destroy(mattDamon);
 	}
 
@@ -157,7 +156,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnPostUpdate()
 	{
-		MFModel_SetWorldMatrix(model, state.transform);
+		if (ValidStache)
+			Stache.Transform = Transform;
 
 		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
 		{
@@ -178,7 +178,17 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 					{
 						Combatant c = cast(Combatant) collider;
 						if (found !is null)
-							c.OnReceiveAttack(ActiveAttacks, AttackStrength);
+						{
+							float strength = AttackStrength;
+							if (Facing == c.Facing)
+								strength = AttackBackStrength;
+
+							if (Facing == c.Facing || !c.IsBlocking)
+							{
+								c.OnReceiveAttack(ActiveAttacks, AttackStrength);
+								state.damageDealt += AttackStrength;
+							}
+						}
 					}
 				}
 			}
@@ -199,6 +209,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	@property bool CanUpdate() { return true; }
 	@property MFMatrix Transform() { return state.transform; }
+	@property MFMatrix Transform(MFMatrix t)	{ return (state.transform = t); }
 	@property string Name() { return name; }
 
 	private @property Position() { return state.transform.t; }
@@ -213,6 +224,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	private @property AttackStrength()				{ return state.attackStrength; }
 	private @property AttackStrength(float s)		{ return (state.attackStrength = s); }
+
+	private @property AttackBackStrength()			{ return state.attackBackStrength; }
+	private @property AttackBackStrength(float s)	{ return (state.attackBackStrength = s); }
 
 	private @property AttackTimeTillHit()			{ return state.attackTimeTillHit; }
 	private @property AttackTimeTillHit(float t)	{ return (state.attackTimeTillHit = t); }
@@ -239,11 +253,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			{
 				ActiveMoves = ActiveMoves | ISheeple.Moves.LightAttack;
 				AttackStrength = Stache.LightAttackStrength;
+				AttackBackStrength = Stache.LightAttackBackStrength;
 				AttackTimeTillHit = Stache.LightAttackHitTime;
 				AttackTimeCooldown = Stache.LightAttackCooldown;
+
+				if(soundSet)
+					soundSet.Play("light");
 			}
-			if(soundSet)
-				soundSet.Play("light");
 		}
 	}
 
@@ -255,11 +271,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			{
 				ActiveMoves = ActiveMoves | ISheeple.Moves.HeavyAttack;
 				AttackStrength = Stache.HeavyAttackStrength;
+				AttackBackStrength = Stache.HeavyAttackBackStrength;
 				AttackTimeTillHit = Stache.HeavyAttackHitTime;
 				AttackTimeCooldown = Stache.HeavyAttackCooldown;
+
+				if(soundSet)
+					soundSet.Play("heavy");
 			}
-			if(soundSet)
-				soundSet.Play("heavy");
 		}
 	}
 
@@ -271,20 +289,24 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			{
 				ActiveMoves = ActiveMoves | ISheeple.Moves.SpecialAttack;
 				AttackStrength = Stache.SpecialAttackStrength;
+				AttackBackStrength = Stache.SpecialAttackBackStrength;
 				AttackTimeTillHit = Stache.SpecialAttackHitTime;
 				AttackTimeCooldown = Stache.SpecialAttackCooldown;
+
+				if(soundSet)
+					soundSet.Play("special");
 			}
-			if(soundSet)
-				soundSet.Play("special");
 		}
 	}
 
 	void OnBlock()
 	{
+		ActiveMoves = ActiveMoves | ISheeple.Moves.Block;
 	}
 
 	void OnUnblock()
 	{
+		ActiveMoves = ActiveMoves & ~ISheeple.Moves.Block;
 	}
 
 	void OnMove(MFVector direction)
@@ -305,6 +327,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property bool CanBlock() { return true; }
 
 	@property float Health() { return state.health / state.healthMax; }
+	@property float DamageDealt() { return state.damageDealt; }
 
 	@property bool IsAttacking() { return ActiveAttacks != ISheeple.Moves.AllAttacks; }
 	@property bool IsBlocking() { return (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }
@@ -317,32 +340,100 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	///IRenderable
 	void OnRenderWorld()
 	{
-		MFPrimitive_DrawSphere(Transform.t, CollisionParameters.x, 8, 5, MFVector.one, MFMatrix.identity, true);
-		MFModel_Draw(model);
-	}
-
-/*	void OnRenderWorld()
-	{
-		MFMaterial_SetMaterial(mattDamon);
-
-		MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
-		MFSetMatrix(state.transform);
-		MFBegin(4);
+/*		if (CollisionTypeEnum == CollisionType.Sphere)
 		{
-			MFSetTexCoord1(0, 1);
-			MFSetPosition(-0.5, -0.5, 0);
-
-			MFSetTexCoord1(0, 0);
-			MFSetPosition(-0.5, 0.5, 0);
-
-			MFSetTexCoord1(1, 1);
-			MFSetPosition(0.5, -0.5, 0);
-
-			MFSetTexCoord1(1, 0);
-			MFSetPosition(0.5, 0.5, 0);
+			MFPrimitive_DrawSphere(Transform.t, CollisionParameters.x, 8, 5, MFVector.one, MFMatrix.identity, true);
 		}
-		MFEnd();
-	}*/
+		else if (CollisionTypeEnum == CollisionType.Box)
+		{
+			MFVector	boxMin = Transform.t - CollisionParameters,
+						boxMax = Transform.t + CollisionParameters;
+
+			MFPrimitive_DrawBox(boxMin, boxMax, MFVector.one, MFMatrix.identity, true);
+		}*/
+
+		if (IsBlocking)
+		{
+			MFMaterial_SetMaterial(mattDamon);
+
+			MFPrimitive(PrimType.TriList | PrimType.Prelit, 0);
+
+			MFMatrix shieldTransform = state.transform;
+			shieldTransform.x *= 300;
+			shieldTransform.y *= 300;
+			shieldTransform.z *= 300;
+			shieldTransform.t += shieldTransform.z * (-CollisionParameters.z * 0.5);
+
+			shieldTransform.t.y += CollisionParameters.y;
+
+			MFSetMatrix(shieldTransform);
+			MFBegin(18);
+			{
+				// Left seg
+				MFSetTexCoord1(0, 1);
+				MFSetPosition(-0.5, -0.5, 0.25);
+
+				MFSetTexCoord1(0, 0);
+				MFSetPosition(-0.5, 0.5, 0.25);
+
+				MFSetTexCoord1(0.25, 1);
+				MFSetPosition(-0.25, -0.5, 0);
+
+
+				MFSetTexCoord1(0, 0);
+				MFSetPosition(-0.5, 0.5, 0.25);
+
+				MFSetTexCoord1(0.25, 0);
+				MFSetPosition(-0.25, 0.5, 0);
+
+				MFSetTexCoord1(0.25, 1);
+				MFSetPosition(-0.25, -0.5, 0);
+
+
+				// Middle seg
+				MFSetTexCoord1(0.25, 1);
+				MFSetPosition(-0.25, -0.5, 0);
+
+				MFSetTexCoord1(0.25, 0);
+				MFSetPosition(-0.25, 0.5, 0);
+
+				MFSetTexCoord1(0.75, 1);
+				MFSetPosition(0.25, -0.5, 0);
+
+
+				MFSetTexCoord1(0.25, 0);
+				MFSetPosition(-0.25, 0.5, 0);
+
+				MFSetTexCoord1(0.75, 0);
+				MFSetPosition(0.25, 0.5, 0);
+
+				MFSetTexCoord1(0.75, 1);
+				MFSetPosition(0.25, -0.5, 0);
+
+
+				// Right seg
+				MFSetTexCoord1(0.75, 1);
+				MFSetPosition(0.25, -0.5, 0);
+
+				MFSetTexCoord1(0.75, 0);
+				MFSetPosition(0.25, 0.5, 0);
+
+				MFSetTexCoord1(1, 1);
+				MFSetPosition(0.5, -0.5, 0.25);
+
+
+				MFSetTexCoord1(0.75, 0);
+				MFSetPosition(0.25, 0.5, 0);
+
+				MFSetTexCoord1(1, 0);
+				MFSetPosition(0.5, 0.5, 0.25);
+
+				MFSetTexCoord1(1, 1);
+				MFSetPosition(0.5, -0.5, 0.25);
+			}
+			MFEnd();
+		}
+	}
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
@@ -367,14 +458,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	@property MFVector CollisionPrevPosition() { return state.prevPosition; }
 
-	@property CollisionType CollisionTypeEnum() { return CollisionType.Sphere; }
+	@property CollisionType CollisionTypeEnum() { return CollisionType.Box; }
 	@property CollisionClass CollisionClassEnum() { return CollisionClass.Combatant; }
-	@property MFVector CollisionParameters() { return MFVector(1.3, 1.3, 1.3, 1.3); } // { return MFVector(0.51, 0.51, 0.51, 0.51); }
+	@property MFVector CollisionParameters() { return MFVector(1.3, 1.3, 1, 0); } // { return MFVector(0.51, 0.51, 0.51, 0.51); }
 
 	CollisionManager colMan;
 
 	MFMaterial* mattDamon;
-	MFModel* model;
 
 	SoundSet soundSet;
 }

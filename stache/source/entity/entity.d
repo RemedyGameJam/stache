@@ -18,5 +18,6 @@ interface IEntity
 
 	@property bool CanUpdate();
 	@property MFMatrix Transform();
+	@property MFMatrix Transform(MFMatrix t);
 	@property string Name();
 }
