@@ -2,19 +2,19 @@
 <root>
   <arena>
     <properties>
-      <dimensions x="100" z="15" />
+      <dimensions x="60" z="15" />
       <surfaces>
-        <surface type="floor" material="Grass" />
-        <surface type="backwall" material="MattDamon" />
+        <surface type="floor" material="floor_small" />
+        <surface type="backwall" material="background" />
       </surfaces>
       <sounds file="apachesounds" />
       <music track="music" />
     </properties>
     <entities>
-      <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="40" z="3" facing="right" />
-      <entity type="Combatant" name="Player2" defaultstache="Dictator2" x="60" z="3" facing="left" />
-      <entity type="Combatant" name="Player3" defaultstache="Freddy3" x="40" z="12" facing="right" />
-      <entity type="Combatant" name="Player4" defaultstache="Magnum4" x="60" z="12" facing="left" />
+      <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="20" z="3" facing="right" />
+      <entity type="Combatant" name="Player2" defaultstache="Dictator2" x="40" z="3" facing="left" />
+      <entity type="Combatant" name="Player3" defaultstache="Freddy3" x="20" z="12" facing="right" />
+      <entity type="Combatant" name="Player4" defaultstache="Magnum4" x="40" z="12" facing="left" />
       <entity type="HulkStache" name="Hulk1" />
       <entity type="HulkStache" name="Hulk2" />
       <entity type="HulkStache" name="Hulk3" />
