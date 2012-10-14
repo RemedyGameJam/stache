@@ -67,15 +67,6 @@ class InGameState : IState
 		const(char*) rawData = MFFileSystem_Load("apachearena.xml", &length, false);
 
 		string data = rawData[0 .. length].idup;
-		try
-		{
-			check(data);
-		}
-		catch (CheckException e)
-		{
-			string failure = e.toString();
-		}
-
 		DocumentParser doc = new DocumentParser(data);
 
 		ParseArena(doc);
@@ -309,6 +300,8 @@ class InGameState : IState
 									nextComment += sounds.Play("winner");
 								else if(player == combatants.length-1 && playerRanking[player].score < playerRanking[player-1].score)
 									nextComment += sounds.Play("loser");
+								else if(player == combatants.length-2 && playerRanking[player].score > playerRanking[player+1].score)
+									nextComment += sounds.Play("rank3");
 								else
 									nextComment += sounds.Play("rank" ~ to!string(1 + commentsSpoken++));
 								rankingStep++;
@@ -332,33 +325,27 @@ class InGameState : IState
 	{
 		roundState = RoundState.Waiting;
 
-		Game.TimeKeeper.MarkAtNextMeasure(
-			() {
-				// pre-round
-				roundState = RoundState.PreRound;
+		Game.TimeKeeper.MarkAtNextMeasure( () {
+			// pre-round
+			roundState = RoundState.PreRound;
 
-				if(music)
-					music.Playing = true;
+			if(music)
+				music.Playing = true;
 
-				Game.TimeKeeper.MarkIn(8,
-					() {
-						// begin round
-						roundState = RoundState.Battle;
+			Game.TimeKeeper.MarkIn(8, () {
+				// begin round
+				roundState = RoundState.Battle;
 
-						roundBeginEvent();
+				roundBeginEvent();
 
-						Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2),
-							() {
-								// end round
-								roundState = RoundState.PostRound;
+				Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2), () {
+					// end round
+					roundState = RoundState.PostRound;
 
-								roundEndEvent();
-							}
-						);
-					}
-				);
-			}
-		);
+					roundEndEvent();
+				});
+			});
+		});
 
 		resetEvent();
 	}

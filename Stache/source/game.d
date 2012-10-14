@@ -197,6 +197,11 @@ class Game
 		mountData.pMountpoint = "data";
 		mountData.pPath = MFFile_SystemPath("../Data/");
 		MFFileSystem_Mount(hNative, mountData);
+
+		mountData.flags = MFMountFlags.DontCacheTOC;
+		mountData.pMountpoint = "cache";
+		mountData.pPath = MFFile_SystemPath("../Data/Cache");
+		MFFileSystem_Mount(hNative, mountData);
 	}
 
 	void Init()

@@ -65,7 +65,7 @@
   <debuglevel>0</debuglevel>
   <debugids />
   <versionlevel>0</versionlevel>
-  <versionids />
+  <versionids>Debug</versionids>
   <dump_source>0</dump_source>
   <mapverbosity>0</mapverbosity>
   <createImplib>0</createImplib>
@@ -181,7 +181,7 @@
   <exefile>$(OutDir)\$(ProjectName)_$(ConfigurationName).exe</exefile>
   <additionalOptions />
   <preBuildCommand />
-  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Debug.dll .\bin</postBuildCommand>
+  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Release.dll .\bin</postBuildCommand>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="Stache">
