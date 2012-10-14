@@ -18,6 +18,7 @@ interface IStache
 	void OnAttach(IEntity entity);
 	void OnDetach(IEntity entity);
 
+	@property string CharacterName();
 	@property string ModelFilename();
 	@property string PortraitFilename();
 	@property string SoundsetFilename();
@@ -142,7 +143,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 			state.attachedTo = null;
 	}
 
-
+	@property string CharacterName()			{ return "doggiedoodoo"; }
 	@property string ModelFilename()			{ return "shitkicker"; }
 	@property string PortraitFilename()			{ return "oldgregg"; }
 	@property string SoundsetFilename()			{ return "ballsucker"; }

@@ -370,7 +370,19 @@ class InGameState : IState
 		if(roundState < RoundState.Battle)
 			return roundLength;
 		else if(roundState == RoundState.Battle)
+		{
+			int aliveCount = 0;
+			foreach (c; combatants)
+			{
+				if (c.Alive)
+					++aliveCount;
+			}
+
+			if (aliveCount <= 1)
+				Game.TimeKeeper.MarkHack();
+
 			return roundLength - Game.TimeKeeper.SinceMark;
+		}
 		else
 			return 0;
 	}
@@ -643,9 +655,9 @@ class InGameState : IState
 
 	private Music music;
 	private SoundSet sounds;
-
+	
 	private RoundState roundState;
-	private float roundLength = 5;
+	private float roundLength = 60;
 
 	private MFFont* chinese;
 

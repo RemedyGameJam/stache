@@ -64,6 +64,11 @@ class Timer
 			markInEvent += callback;
 	}
 
+	void MarkHack()
+	{
+		markIn = 1;
+	}
+
 	void MarkAtNextBeat(void delegate() callback)
 	{
 		markAtNextBeat = true;
