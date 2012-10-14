@@ -11,6 +11,7 @@ import fuji.font;
 import std.xml;
 import std.string;
 import std.conv;
+import std.random;
 
 import stache.battlecamera;
 
@@ -36,7 +37,7 @@ class InGameState : IState
 
 	enum RoundState
 	{
-		WaitForTwo,
+		Waiting,
 		PreRound,
 		Battle,
 		PostRound
@@ -89,14 +90,42 @@ class InGameState : IState
 		//MFHeap_Free(rawData);
 
 
-		roundState = RoundState.WaitForTwo;
-		stateTimer = 2;
-		roundTimer = roundLength;
+		roundState = RoundState.Waiting;
+
+		Game.TimeKeeper.MarkAtNextMeasure(
+			() {
+				// pre-round
+				roundState = RoundState.PreRound;
+
+				if(music)
+					music.Playing = true;
+
+				Game.TimeKeeper.MarkIn(8,
+					() {
+						// begin round
+						roundState = RoundState.Battle;
+
+						roundBeginEvent();
+
+						Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2),
+							() {
+								// end round
+								roundState = RoundState.PostRound;
+
+								roundEndEvent();
+							}
+						);
+					}
+				);
+			}
+		);
+
+		Game.TimeKeeper.AddMeasureEvent(() {
+			if(roundState == RoundState.Battle)
+				music.SetTrackVolume(uniform(1,3), uniform(0,2) ? 1 : 0);
+		});
 
 		resetEvent();
-
-//		if(music)
-//			music.Playing = true;
 	}
 
 	void OnExit()
@@ -112,41 +141,13 @@ class InGameState : IState
 
 	void OnUpdate()
 	{
-		final switch(roundState) with(RoundState)
+		switch(roundState) with(RoundState)
 		{
-			case WaitForTwo:
-				stateTimer -= 1;
-				if(stateTimer <= 0)
-				{
-					// begin pre-round countdown
-					roundState = RoundState.PreRound;
-					stateTimer = 5;
-				}
-				break;
-			case PreRound:
-				stateTimer -= MFSystem_GetTimeDelta();
-
-				if(stateTimer <= 0)
-				{
-					roundState = Battle;
-					roundBeginEvent();
-				}
-				break;
-
 			case Battle:
-				roundTimer -= MFSystem_GetTimeDelta();
-
-				if(roundTimer < 0)
-				{
-					roundState = PostRound;
-					roundEndEvent();
-				}
-
 				thinkEvent();
 				break;
 
-			case PostRound:
-				break;
+			default:
 		}
 
 
@@ -249,6 +250,15 @@ class InGameState : IState
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
+		{
+			string text = format("%.2s - %s", Game.TimeKeeper.SinceMark, cast(int)Game.TimeKeeper.Beat);
+			const(char*) str = text.toStringz;
+			float messageHeight = 150;
+
+			float halfMessageWidth = MFFont_GetStringWidth(chinese, str, messageHeight, 0, -1, null) * 0.5;
+			MFFont_DrawText2f(chinese, 20, 650, 50, MFVector(1, 1, 1, 1), str);
+		}
+
 		renderGUIEvent(orthoRect);
 
 		RenderLifeBars(orthoRect);
@@ -258,10 +268,11 @@ class InGameState : IState
 			case PreRound:
 				RenderTime(orthoRect);
 
+				float stateTimer = 4 - Game.TimeKeeper.SinceMark;
 				if(stateTimer < 3)
 				{
 					int countDown = cast(int)(stateTimer + 1);
-					float interval = stateTimer - cast(int)stateTimer;
+					float interval = stateTimer - cast(int)(stateTimer);
 					float t = stateTimer / 3;
 
 					string text = format("%s", countDown);
@@ -269,38 +280,66 @@ class InGameState : IState
 					float messageHeight = 50 + 150*interval + 200*(1-t);
 
 					float halfMessageWidth = MFFont_GetStringWidth(chinese, str, messageHeight, 0, -1, null) * 0.5;
-					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 250 - messageHeight*0.5, messageHeight, MFVector(1, t, 0, 1), str);
+					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 400 - messageHeight*0.5, messageHeight, MFVector(1, t, 0, 1), str);
 				}
 				break;
 
 			case Battle:
 				RenderTime(orthoRect);
 
-				if(roundLength - roundTimer < 2.5)
+				if(Game.TimeKeeper.SinceMark < 2.5)
 				{
 					string battle = "Battle!";
 					float halfMessageWidth = MFFont_GetStringWidth(chinese, battle.ptr, 200, 0, -1, null) * 0.5;
-					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 250 - 100, 200, MFVector.white, battle.ptr);
+					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 400 - 100, 200, MFVector.white, battle.ptr);
 				}
 				break;
 
 			case PostRound:
+				float stateTimer = Game.TimeKeeper.SinceMark;
+				if(stateTimer < 5)
+				{
+					string battle = "Round over!";
+					float halfMessageWidth = MFFont_GetStringWidth(chinese, battle.ptr, 200, 0, -1, null) * 0.5;
+					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 400 - 100, 200, MFVector.white, battle.ptr);
+				}
 				break;
 
 			default:
 		}
 	}
 
+	@property float RoundTimeRemaining()
+	{
+		if(roundState < RoundState.Battle)
+			return roundLength;
+		else if(roundState == RoundState.Battle)
+			return roundLength - Game.TimeKeeper.SinceMark;
+		else
+			return 0;
+	}
+
 	void RenderTime(MFRect orthoRect)
 	{
-		int countDown = cast(int)(roundTimer + 1);
+		float roundTimer = RoundTimeRemaining;
+
+		int countDown = cast(int)(roundTimer + 0.99999);
 		string text = format("%s", countDown);
 		const(char*) str = text.toStringz;
 
-		float messageHeight = 80;
+		float messageHeight = 120;
+		float c = 1;
+
+		if(roundTimer < 10)
+		{
+			float interval = roundTimer - cast(int)roundTimer;
+			c = roundTimer / 10;
+
+			messageHeight += 50*interval + 100*(1-c);
+		}
 
 		float halfMessageWidth = MFFont_GetStringWidth(chinese, str, messageHeight, 0, -1, null) * 0.5;
-		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 50 - messageHeight*0.5, messageHeight, MFVector.white, str);
+		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 80 - messageHeight*0.5, messageHeight, MFVector(1, c, c, 1), str);
 	}
 
 	void RenderLifeBars(MFRect orthoRect)
@@ -543,9 +582,7 @@ class InGameState : IState
 	private SoundSet sounds;
 
 	private RoundState roundState;
-	private float stateTimer;
-	private float roundLength = 89.99999;
-	private float roundTimer;
+	private float roundLength = 60;
 
 	private MFFont* chinese;
 }

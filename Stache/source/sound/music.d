@@ -5,6 +5,7 @@ import fuji.sound;
 
 import std.xml;
 import std.string;
+import std.conv;
 
 class Music
 {
@@ -31,9 +32,13 @@ class Music
 			{
 				string music = xml.tag.attr["track"];
 
-				stream = MFSound_CreateStream(music.toStringz, MFAudioStreamFlags.AllowSeeking);
+				MFAudioStream* stream = MFSound_CreateStream(music.toStringz, MFAudioStreamFlags.AllowSeeking);
 				if(stream)
+				{
+					string vol = xml.tag.attr["vol"];
+					streams ~= Stream(stream, vol ? to!float(vol) : 1);
 					MFSound_PlayStream(stream, MFPlayFlags.Looping | MFPlayFlags.BeginPaused);
+				}
 			};
 
 			xml.parse();
@@ -42,10 +47,63 @@ class Music
 		doc.parse();
 	}
 
-	@property bool Playing(bool playing) { if(bPlaying != playing) { bPlaying = playing; MFSound_PauseStream(stream, !playing); } return playing; }
+	void Destroy()
+	{
+		foreach(s; streams)
+			MFSound_DestroyStream(s.stream);
+		streams = null;
+	}
+
+	void SetMasterVolume(float vol)
+	{
+		masterVol = vol;
+		ResetVolumes();
+	}
+
+	void SetTrackVolume(int track, float vol)
+	{
+		if(track >= streams.length)
+			return;
+
+		streams[track].vol = vol;
+
+		MFVoice* voice = MFSound_GetStreamVoice(streams[track].stream);
+		MFSound_SetVolume(voice, vol * masterVol);
+	}
+
+	@property bool Playing(bool playing)
+	{
+		if(bPlaying != playing)
+		{
+			bPlaying = playing;
+
+			foreach(s; streams)
+				MFSound_PauseStream(s.stream, !playing);
+
+			if(playing)
+				ResetVolumes();
+		}
+		return playing;
+	}
+
 	@property bool Playing() { return bPlaying; }
+
+
+	private void ResetVolumes()
+	{
+		foreach(i, s; streams)
+			SetTrackVolume(i, s.vol);
+	}
 
 	bool bPlaying;
 
-	MFAudioStream* stream;
+	float masterVol = 1;
+
+	struct Stream
+	{
+		MFAudioStream* stream;
+		float vol = 1;
+	}
+
+	Stream[] streams;
 }
