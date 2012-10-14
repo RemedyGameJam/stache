@@ -5,6 +5,8 @@ import fuji.render;
 import fuji.matrix;
 import fuji.material;
 import fuji.primitive;
+import fuji.system;
+import fuji.font;
 
 import std.xml;
 import std.string;
@@ -25,9 +27,26 @@ import stache.thinkers.nullthinker;
 
 import stache.i.collider;
 
+import stache.sound.soundset;
+import stache.sound.music;
+
 class InGameState : IState
 {
 	BattleCamera camera;
+
+	enum RoundState
+	{
+		WaitForTwo,
+		PreRound,
+		Battle,
+		PostRound
+	}
+
+	this()
+	{
+		roundBeginEvent += &OnRoundBegin;
+		roundEndEvent += &OnRoundEnd;
+	}
 
 	void OnAdd(StateMachine statemachine)
 	{
@@ -39,6 +58,8 @@ class InGameState : IState
 		collision = new CollisionManager;
 
 		camera = new BattleCamera;
+
+		arial = MFFont_Create("Arial");
 
 		size_t length;
 		const(char*) rawData = MFFileSystem_Load("apachearena.xml", &length, false);
@@ -65,7 +86,14 @@ class InGameState : IState
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
+
+		roundState = RoundState.WaitForTwo;
+		roundTimer = 2;
+
 		resetEvent();
+
+//		if(music)
+//			music.Playing = true;
 	}
 
 	void OnExit()
@@ -81,11 +109,60 @@ class InGameState : IState
 
 	void OnUpdate()
 	{
-		thinkEvent();
+		if(roundState != RoundState.WaitForTwo)
+			roundTimer -= MFSystem_GetTimeDelta();
+
+		final switch(roundState) with(RoundState)
+		{
+			case WaitForTwo:
+				roundTimer -= 1;
+				if(roundTimer <= 0)
+				{
+					// begin pre-round countdown
+					roundState = RoundState.PreRound;
+					roundTimer = 5;
+				}
+				break;
+			case PreRound:
+				if(roundTimer <= 0)
+				{
+					roundState = Battle;
+					roundBeginEvent();
+				}
+				break;
+
+			case Battle:
+				if(roundTimer <= 0)
+				{
+					roundState = PostRound;
+					roundEndEvent();
+				}
+
+				thinkEvent();
+				break;
+
+			case PostRound:
+				break;
+		}
+
 
 		updateEvent();
 		collision.OnUpdate();
 		postUpdateEvent();
+	}
+
+	void OnRoundBegin()
+	{
+		roundTimer = roundLength;
+
+		if(sounds)
+			sounds.Play("begin");
+	}
+
+	void OnRoundEnd()
+	{
+		if(sounds)
+			sounds.Play("end");
 	}
 
 	@property StateMachine Owner() { return owner; }
@@ -171,6 +248,39 @@ class InGameState : IState
 	void OnRenderGUI(MFRect orthoRect)
 	{
 		renderGUIEvent(orthoRect);
+
+		switch(roundState) with(RoundState)
+		{
+			case PreRound:
+				if(roundTimer < 3)
+				{
+					int countDown = cast(int)(roundTimer + 1);
+					float interval = roundTimer - cast(int)roundTimer;
+					float t = roundTimer / 3;
+
+					string text = format("%s", countDown);
+					const(char*) str = text.toStringz;
+					float messageHeight = 50 + 50*interval + 50*(1-t);
+
+					float halfMessageWidth = MFFont_GetStringWidth(arial, str, messageHeight, 0, -1, null) * 0.5;
+					MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 250 - messageHeight*0.5, messageHeight, MFVector(1, t, 0, 1), str);
+				}
+				break;
+
+			case Battle:
+				if(roundLength - roundTimer < 2.5)
+				{
+					string battle = "Battle!";
+					float halfMessageWidth = MFFont_GetStringWidth(arial, battle.ptr, 200, 0, -1, null) * 0.5;
+					MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 250 - 100, 200, MFVector.white, battle.ptr);
+				}
+				break;
+
+			case PostRound:
+				break;
+
+			default:
+		}
 	}
 
 	@property bool CanRenderWorld() { return true; }
@@ -207,6 +317,22 @@ class InGameState : IState
 					surfacesTag.onStartTag["surface"] = &CreateSurface;
 
 					surfacesTag.parse();
+				};
+
+				propertiesTag.onStartTag["sounds"] = (ElementParser soundTag)
+				{
+					string set = soundTag.tag.attr["file"];
+					sounds = new SoundSet(set);
+
+					soundTag.parse();
+				};
+
+				propertiesTag.onStartTag["music"] = (ElementParser musicTag)
+				{
+					string track = musicTag.tag.attr["track"];
+					music = new Music(track);
+
+					musicTag.parse();
 				};
 
 				propertiesTag.parse();
@@ -318,6 +444,9 @@ class InGameState : IState
 	private VoidEvent renderWorldEvent;
 	private MFRectEvent renderGUIEvent;
 
+	private VoidEvent roundBeginEvent;
+	private VoidEvent roundEndEvent;
+
 	private IEntity[] entities;
 	private IThinker[] thinkers;
 	private ICollider[] colliders;
@@ -332,4 +461,13 @@ class InGameState : IState
 	private MaterialWrap[string] materials;
 
 	private CollisionManager collision;
+
+	private Music music;
+	private SoundSet sounds;
+
+	private RoundState roundState;
+	private float roundLength = 60;
+	private float roundTimer;
+
+	private MFFont* arial;
 }

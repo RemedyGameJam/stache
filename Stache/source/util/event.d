@@ -13,8 +13,8 @@ struct EventTemplate( T... )
 			s( args );
 	}
 
-	void opAssign( string op )( Delegate eventHandler ) if( op == "+=" )	{ subscribe(eventHandler); }
-	void opAssign( string op )( Delegate eventHandler ) if( op == "-=" )	{ unsubscribe(eventHandler); }
+	void opOpAssign( string op )( Delegate eventHandler ) if( op == "+" )	{ subscribe(eventHandler); }
+	void opOpAssign( string op )( Delegate eventHandler ) if( op == "-" )	{ unsubscribe(eventHandler); }
 
 	@property bool isEmpty() { return m_subscribers.length == 0; }
 

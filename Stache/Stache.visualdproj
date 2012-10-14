@@ -221,6 +221,10 @@
     <File path="source\entity\hulkstache.d" />
     <File path="source\entity\stache.d" />
    </Folder>
+   <Folder name="sound">
+    <File path="source\sound\music.d" />
+    <File path="source\sound\sound.d" />
+   </Folder>
    <Folder name="interface">
     <File path="source\interface\collider.d" />
     <File path="source\entity\entity.d" />
