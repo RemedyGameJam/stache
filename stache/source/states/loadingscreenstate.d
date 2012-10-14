@@ -22,18 +22,18 @@ class LoadingScreenState : IState, IRenderable
 
 	void OnEnter()
 	{
-		arial = MFFont_Create("Arial");
+		chinese = MFFont_Create("ChineseRocks");
 		mattDamon = MFMaterial_Create("MattDamon");
 
-		halfMessageWidth = MFFont_GetStringWidth(arial, message, messageHeight, 0, -1, null) * 0.5;
+		halfMessageWidth = MFFont_GetStringWidth(chinese, message, messageHeight, 0, -1, null) * 0.5;
 
 		elapsedTime = 0;
 	}
 
 	void OnExit()
 	{
-		MFFont_Destroy(arial);
-		arial = null;
+		MFFont_Destroy(chinese);
+		chinese = null;
 
 		MFMaterial_Destroy(mattDamon);
 		mattDamon = null;
@@ -94,8 +94,8 @@ class LoadingScreenState : IState, IRenderable
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
-		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 515, messageHeight, MFVector(0, 0, 0, 1), message);
-		MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth - 1, 514, messageHeight, MFVector(1, 1, 1, 1), message);
+		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 515, messageHeight, MFVector(0, 0, 0, 1), message);
+		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth - 1, 514, messageHeight, MFVector(1, 1, 1, 1), message);
 	}
 
 	@property bool CanRenderWorld() { return true; }
@@ -106,7 +106,7 @@ class LoadingScreenState : IState, IRenderable
 
 	private MFMaterial* mattDamon;
 	private float elapsedTime;
-	private MFFont* arial;
+	private MFFont* chinese;
 
 	private float halfMessageWidth;
 
