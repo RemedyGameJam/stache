@@ -3,6 +3,9 @@ module stache.entity.stache;
 public import stache.i.entity;
 
 import fuji.model;
+
+import stache.sound.soundset;
+
 import stache.i.renderable;
 import stache.util.meshanimator;
 
@@ -15,6 +18,7 @@ interface IStache
 	void OnDetach(IEntity entity);
 
 	@property string ModelFilename();
+	@property string SoundsetFilename();
 
 	@property float LightAttackStrength();
 	@property float LightAttackBackStrength();
@@ -54,6 +58,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 		}
 
 		animator = new MeshAnimator(ModelFilename);
+		soundSet = new SoundSet(SoundsetFilename);
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -115,8 +120,6 @@ class StacheEntity : IEntity, IStache, IRenderable
 	@property bool CanRenderWorld()				{ return true; }
 	@property bool CanRenderGUI()				{ return false; }
 
-	private MeshAnimator animator;
-
 
 	/// IStache
 
@@ -138,6 +141,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 
 	@property string ModelFilename()			{ return "shitkicker"; }
+	@property string SoundsetFilename()			{ return "ballsucker"; }
 
 	@property float LightAttackStrength()		{ return 0.0; }
 	@property float LightAttackBackStrength()	{ return LightAttackStrength; }
@@ -155,7 +159,12 @@ class StacheEntity : IEntity, IStache, IRenderable
 	@property float SpecialAttackCooldown()		{ return 0.0; }
 
 
-	// Special methods
+	/// Special methods
 
-	void SetAnimation(string animName) { animator.SetAnimation(animName); }
+	void SetAnimation(string animName) { if (animator !is null) animator.SetAnimation(animName); }
+	void PlaySound(string animName) { if (soundSet !is null) soundSet.Play(animName); }
+
+	private MeshAnimator animator;
+	private SoundSet soundSet;
+
 }

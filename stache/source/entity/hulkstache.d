@@ -5,6 +5,7 @@ public import stache.entity.stache;
 class HulkStache : StacheEntity
 {
 	@property string ModelFilename()		{ return "hogan_anims.xml"; }
+	@property string SoundsetFilename()		{ return "player1"; }
 
 	/// IStache
 	@property float LightAttackStrength()	{ return 5; }
