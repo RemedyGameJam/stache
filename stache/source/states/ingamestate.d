@@ -12,6 +12,8 @@ import std.xml;
 import std.string;
 import std.conv;
 
+import stache.battlecamera;
+
 import stache.i.statemachine;
 import stache.game;
 
@@ -30,6 +32,8 @@ import stache.sound.music;
 
 class InGameState : IState
 {
+	BattleCamera camera;
+
 	enum RoundState
 	{
 		WaitForTwo,
@@ -53,6 +57,8 @@ class InGameState : IState
 	{
 		collision = new CollisionManager;
 
+		camera = new BattleCamera;
+
 		arial = MFFont_Create("Arial");
 
 		size_t length;
@@ -74,6 +80,9 @@ class InGameState : IState
 
 		collision.PlaneDimensions = dimensions;
 
+		postUpdateEvent.subscribe(&camera.OnPostUpdate);
+		resetEvent.subscribe(&camera.OnReset);
+
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
@@ -94,6 +103,7 @@ class InGameState : IState
 			MFMaterial_Destroy(mat.mat);
 		}
 
+		camera = null;
 		collision = null;
 	}
 
@@ -166,17 +176,7 @@ class InGameState : IState
 
 		MFView_Push();
 		{
-			float x = MFDeg2Rad!60;
-			MFView_ConfigureProjection(x, 0.01, 100000);
-			// TODO: Nasty singletonses
-			float ratio = Game.Instance.mfInitParams.display.displayRect.width / Game.Instance.mfInitParams.display.displayRect.height;
-			MFView_SetAspectRatio(ratio);
-			MFView_SetProjection();
-
-			MFMatrix mat;
-
-			mat.t = MFVector(5, 2, 0, 1);
-			MFView_SetCameraMatrix(mat);
+			camera.Apply();
 
 			renderWorldEvent();
 
@@ -271,7 +271,7 @@ class InGameState : IState
 				{
 					string battle = "Battle!";
 					float halfMessageWidth = MFFont_GetStringWidth(arial, battle.ptr, 200, 0, -1, null) * 0.5;
-					MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 250 - 100, 200, MFVector(1, 1, 0, 1), battle.ptr);
+					MFFont_DrawText2f(arial, orthoRect.width * 0.5 - halfMessageWidth, 250 - 100, 200, MFVector.white, battle.ptr);
 				}
 				break;
 
@@ -424,6 +424,8 @@ class InGameState : IState
 		}
 
 		thinkers ~= thinker;
+
+		camera.AddTrackedEntity(combatant);
 	}
 
 	void AddCollider(ICollider collider)

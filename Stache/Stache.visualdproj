@@ -213,6 +213,7 @@
   </Folder>
   <Folder name="source">
    <Folder name="camera">
+    <File path="source\camera\battlecamera.d" />
     <File path="source\camera\camera.d" />
    </Folder>
    <Folder name="entity">
