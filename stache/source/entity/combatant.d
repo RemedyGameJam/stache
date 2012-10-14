@@ -1,5 +1,7 @@
 module stache.entity.combatant;
 
+import stache.sound.soundset;
+
 import fuji.system;
 import fuji.vector;
 import fuji.material;
@@ -47,6 +49,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		mattDamon = MFMaterial_Create("MattDamon");
 
 		model = MFModel_Create("Hogan_walk_static");
+
+		soundSet = new SoundSet("s1");
 	}
 
 	void OnReset()
@@ -99,14 +103,20 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	/// IThinker
 	void OnLightAttack()
 	{
+		if(soundSet)
+			soundSet.Play("light");
 	}
 
 	void OnHeavyAttack()
 	{
+		if(soundSet)
+			soundSet.Play("heavy");
 	}
 
 	void OnSpecialAttack()
 	{
+		if(soundSet)
+			soundSet.Play("special");
 	}
 
 	void OnBlock()
@@ -190,4 +200,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	MFMaterial* mattDamon;
 	MFModel* model;
+
+	SoundSet soundSet;
 }

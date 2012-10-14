@@ -1,0 +1,11 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<root>
+  <soundset>
+    <group name="begin">
+      <sound file="round_start_gong" />
+    </group>
+    <group name="end">
+      <sound file="round_end_gong" />
+    </group>
+  </soundset>
+</root>
