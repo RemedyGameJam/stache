@@ -30,6 +30,7 @@ interface ISheeple
 
 	@property float Health();
 	@property float DamageDealt();
+	@property bool Alive();
 
 	@property bool IsAttacking();
 	@property bool IsBlocking();

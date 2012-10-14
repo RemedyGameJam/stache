@@ -117,6 +117,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnUpdate()
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveMoves)
 		{
 			PrevPosition = Position;
@@ -163,6 +166,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnPostUpdate()
 	{
+		if (!Alive)
+			return;
+
 		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
 		{
 			if (AttackTimeTillHit > 0)
@@ -355,6 +361,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		if(ValidStache)
 			Stache.PlaySound("hit");
+
+		if (!Alive)
+			Stache.SetAnimation("death");
 	}
 
 	@property bool CanMove() { return true; }
@@ -363,6 +372,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	@property float Health() { return state.health / state.healthMax; }
 	@property float DamageDealt() { return state.damageDealt; }
+	@property bool Alive() { return Health > 0; }
 
 	@property bool IsAttacking() { return (ActiveAttacks & ISheeple.Moves.AllAttacks) != 0; }
 	@property bool IsBlocking() { return !IsAttacking && (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }

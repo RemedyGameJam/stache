@@ -15,14 +15,6 @@ class SoundSet
 		const(char*) rawData = MFFileSystem_Load((xml ~ ".xml").toStringz, &length, false);
 
 		string data = rawData[0 .. length].idup;
-		try
-		{
-			check(data);
-		}
-		catch (CheckException e)
-		{
-			string failure = e.toString();
-		}
 
 		DocumentParser doc = new DocumentParser(data);
 
