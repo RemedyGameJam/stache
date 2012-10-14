@@ -117,6 +117,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnUpdate()
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveMoves)
 		{
 			PrevPosition = Position;
@@ -163,6 +166,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnPostUpdate()
 	{
+		if (!Alive)
+		{
+			if (ValidStache)
+				Stache.Transform = Transform;
+			return;
+		}
+
 		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
 		{
 			if (AttackTimeTillHit > 0)
@@ -189,8 +199,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 							if (Facing == c.Facing || !c.IsBlocking)
 							{
-								c.OnReceiveAttack(ActiveAttacks, AttackStrength);
-								state.damageDealt += AttackStrength;
+								float damageDealt = c.OnReceiveAttack(ActiveAttacks, strength);
+
+								state.damageDealt += damageDealt;
 							}
 						}
 					}
@@ -262,6 +273,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnLightAttack()
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveAttacks)
 		{
 			if (ValidStache)
@@ -281,6 +295,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnHeavyAttack()
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveAttacks)
 		{
 			if (ValidStache)
@@ -300,6 +317,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnSpecialAttack()
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveAttacks)
 		{
 			if (ValidStache)
@@ -319,6 +339,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnBlock()
 	{
+		if (!Alive)
+			return;
+
 		if (ActiveAttacks)
 			return;
 
@@ -330,6 +353,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnUnblock()
 	{
+		if (!Alive)
+			return;
+
 		ActiveMoves = ActiveMoves & ~ISheeple.Moves.Block;
 
 		if (moveDirection.magSq3() > 0)
@@ -338,23 +364,33 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnMove(MFVector direction)
 	{
+		if (!Alive)
+			return;
+
 		if (!ActiveAttacks)
 		{
 			float lastMoveMag = moveDirection.mag3();
 
 			moveDirection = direction * MoveSpeed;
 
-			if (!IsBlocking() && ValidStache && lastMoveMag <= 0)
+			if (!IsBlocking() && ValidStache && lastMoveMag <= 0 && moveDirection.mag3() > 0.01)
 				Stache.SetAnimation("walk");
 		}
 	}
 	
-	void OnReceiveAttack(Moves type, float strength)
+	float OnReceiveAttack(Moves type, float strength)
 	{
+		float prevHealth = state.health;
+
 		state.health = max(0, state.health - strength);
 
 		if(ValidStache)
 			Stache.PlaySound("hit");
+
+		if (!Alive)
+			Stache.SetAnimation("death");
+
+		return prevHealth - state.health;
 	}
 
 	@property bool CanMove() { return true; }
@@ -363,6 +399,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	@property float Health() { return state.health / state.healthMax; }
 	@property float DamageDealt() { return state.damageDealt; }
+	@property bool Alive() { return Health > 0; }
 
 	@property bool IsAttacking() { return (ActiveAttacks & ISheeple.Moves.AllAttacks) != 0; }
 	@property bool IsBlocking() { return !IsAttacking && (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }

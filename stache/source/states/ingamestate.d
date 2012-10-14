@@ -67,6 +67,7 @@ class InGameState : IState
 		const(char*) rawData = MFFileSystem_Load("apachearena.xml", &length, false);
 
 		string data = rawData[0 .. length].idup;
+
 		DocumentParser doc = new DocumentParser(data);
 
 		ParseArena(doc);
@@ -346,6 +347,10 @@ class InGameState : IState
 				});
 			});
 		});
+
+		rankingStep = 0;
+		commentsSpoken = 0;
+		nextComment = 0;
 
 		resetEvent();
 	}

@@ -46,6 +46,7 @@ class MeshAnimator
 		const(char*) rawData = MFFileSystem_Load(filename.toStringz, &length, false);
 
 		string data = rawData[0 .. length].idup;
+
 		DocumentParser doc = new DocumentParser(data);
 
 		doc.onStartTag["meshes"] = (ElementParser meshesTag)
@@ -140,7 +141,8 @@ class MeshAnimator
 				if (currentAnim.frameIndex >= currentAnim.frames.length && currentAnim.loops)
 					currentAnim.frameIndex = 0;
 
-				currentAnim.timeToNextFrame += currentAnim.frames[currentAnim.frameIndex].percent * currentAnim.totalTime;
+				if (currentAnim.frameIndex < currentAnim.frames.length)
+					currentAnim.timeToNextFrame += currentAnim.frames[currentAnim.frameIndex].percent * currentAnim.totalTime;
 			}
 		}
 	}

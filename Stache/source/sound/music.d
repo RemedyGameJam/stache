@@ -15,6 +15,7 @@ class Music
 		const(char*) rawData = MFFileSystem_Load((xml ~ ".xml").toStringz, &length, false);
 
 		string data = rawData[0 .. length].idup;
+
 		DocumentParser doc = new DocumentParser(data);
 
 		doc.onStartTag["music"] = (ElementParser xml)

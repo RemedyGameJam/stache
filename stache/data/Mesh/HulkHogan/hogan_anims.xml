@@ -16,12 +16,29 @@
     <mesh name="walk13" filename="hogan_walk_13" />
     <mesh name="walk14" filename="hogan_walk_14" />
     <mesh name="walk15" filename="hogan_walk_15" />
+    <mesh name="death1" filename="hogan_death_01" />
+    <mesh name="death2" filename="hogan_death_02" />
+    <mesh name="death3" filename="hogan_death_03" />
+    <mesh name="fall1" filename="hogan_fall_01" />
+    <mesh name="fall2" filename="hogan_fall_02" />
+    <mesh name="fall3" filename="hogan_fall_03" />
+    <mesh name="idle1" filename="hogan_idle_01" />
+    <mesh name="idle2" filename="hogan_idle_02" />
+    <mesh name="slap1" filename="hogan_slap_01" />
+    <mesh name="slap2" filename="hogan_slap_02" />
     <mesh name="punch1" filename="hogan_punch_01" />
     <mesh name="punch2" filename="hogan_punch_02" />
+    <mesh name="special1" filename="hogan_special_01" />
+    <mesh name="special2" filename="hogan_special_02" />
+    <mesh name="special3" filename="hogan_special_03" />
+    <mesh name="special4" filename="hogan_special_04" />
+    <mesh name="special5" filename="hogan_special_05" />
+    <mesh name="special6" filename="hogan_special_06" />
   </meshes>
   <anims>
-    <anim name="idle" time="100000" loop="0" default="1">
-      <frame mesh="walk1" percent="1" />
+    <anim name="idle" time="0.5" loop="1" default="1">
+      <frame mesh="idle1" percent="0.5" />
+      <frame mesh="idle2" percent="0.5" />
     </anim>    
     <anim name="walk" time="1" loop="1" default="0">
       <frame mesh="walk1" percent="0.066666" />
@@ -41,10 +58,10 @@
       <frame mesh="walk15" percent="0.066667" />
     </anim>
     <anim name="light_wind" time="100" loop="0" default="0">
-      <frame mesh="punch1" percent="1" />
+      <frame mesh="slap1" percent="1" />
     </anim>
     <anim name="light_blow" time="100" loop="0" default="0">
-      <frame mesh="punch2" percent="1" />
+      <frame mesh="slap2" percent="1" />
     </anim>
     <anim name="heavy_wind" time="100" loop="0" default="0">
       <frame mesh="punch1" percent="1" />
@@ -55,8 +72,18 @@
     <anim name="special_wind" time="100" loop="0" default="0">
       <frame mesh="punch1" percent="1" />
     </anim>
-    <anim name="special_blow" time="100" loop="0" default="0">
-      <frame mesh="punch2" percent="1" />
+    <anim name="special_blow" time="1.05" loop="0" default="0">
+      <frame mesh="special1" percent="0.166666" />
+      <frame mesh="special2" percent="0.166666" />
+      <frame mesh="special3" percent="0.166666" />
+      <frame mesh="special4" percent="0.166666" />
+      <frame mesh="special5" percent="0.166666" />
+      <frame mesh="special6" percent="0.166666" />
     </anim>
+    <anim name="death" time="0.5" loop="0" default="0">
+      <frame mesh="death1" percent="0.333333" />
+      <frame mesh="death2" percent="0.333333" />
+      <frame mesh="death3" percent="0.333333" />
+    </anim>    
   </anims>
 </root>
