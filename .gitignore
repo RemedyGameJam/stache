@@ -21,3 +21,4 @@
 *.exe_cv
 *.pdb
 *.map
+*/Cache/*
