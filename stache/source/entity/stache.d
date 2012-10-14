@@ -2,31 +2,43 @@ module stache.entity.stache;
 
 public import stache.i.entity;
 
+import fuji.model;
+
 import stache.i.renderable;
 
 import std.conv;
 
 interface IStache
 {
+	void OnResolveAttach(IEntity entity);
+	void OnAttach(IEntity entity);
+	void OnDetach(IEntity entity);
+
+	@property string ModelFilename();
+
 	@property float LightAttackStrength();
+	@property float LightAttackBackStrength();
 	@property float LightAttackHitTime();
 	@property float LightAttackCooldown();
 
 	@property float HeavyAttackStrength();
+	@property float HeavyAttackBackStrength();
 	@property float HeavyAttackHitTime();
 	@property float HeavyAttackCooldown();
 
 	@property float SpecialAttackStrength();
+	@property float SpecialAttackBackStrength();
 	@property float SpecialAttackHitTime();
 	@property float SpecialAttackCooldown();
 }
 
-class StacheEntity : IEntity, IStache
+class StacheEntity : IEntity, IStache, IRenderable
 {
 	struct State
 	{
 		MFMatrix transform;
 		MFVector prevPosition;
+		IEntity attachedTo = null;
 	}
 
 	/// IEntity
@@ -40,6 +52,8 @@ class StacheEntity : IEntity, IStache
 
 			name = element.tag.attr["name"];
 		}
+
+		model = MFModel_Create(ModelFilename.ptr);
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -53,6 +67,7 @@ class StacheEntity : IEntity, IStache
 
 	void OnDestroy()
 	{
+		MFModel_Destroy(model);
 	}
 
 	// Do movement and other type logic in this one
@@ -65,9 +80,16 @@ class StacheEntity : IEntity, IStache
 	{
 	}
 
-	@property bool CanUpdate()			{ return true; }
-	@property MFMatrix Transform()		{ return state.transform; }
-	@property string Name()				{ return name; }
+	@property bool CanUpdate()					{ return true; }
+	@property MFMatrix Transform()				{ return state.transform; }
+	@property MFMatrix Transform(MFMatrix t)
+	{
+		state.transform = t;
+		MFModel_SetWorldMatrix(model, state.transform);
+
+		return state.transform ;
+	}
+	@property string Name()						{ return name; }
 
 	private string name;
 
@@ -77,26 +99,53 @@ class StacheEntity : IEntity, IStache
 	/// IRenderable
 	void OnRenderWorld()
 	{
+		if (state.attachedTo !is null)
+			MFModel_Draw(model);
 	}
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
 	}
 
-	@property bool CanRenderWorld()		{ return true; }
-	@property bool CanRenderGUI()		{ return false; }
+	@property bool CanRenderWorld()				{ return true; }
+	@property bool CanRenderGUI()				{ return false; }
+
+	private MFModel* model;
+
 
 	/// IStache
 
-	@property float LightAttackStrength()	{ return 0.0; }
-	@property float LightAttackHitTime()	{ return 0.0; }
-	@property float LightAttackCooldown()	{ return 0.0; }
+	void OnResolveAttach(IEntity entity)
+	{
+		initialState.attachedTo = entity;
+	}
 
-	@property float HeavyAttackStrength()	{ return 0.0; }
-	@property float HeavyAttackHitTime()	{ return 0.0; }
-	@property float HeavyAttackCooldown()	{ return 0.0; }
+	void OnAttach(IEntity entity)
+	{
+		state.attachedTo = entity;
+	}
 
-	@property float SpecialAttackStrength()	{ return 0.0; }
-	@property float SpecialAttackHitTime()	{ return 0.0; }
-	@property float SpecialAttackCooldown()	{ return 0.0; }
+	void OnDetach(IEntity entity)
+	{
+		if (state.attachedTo == entity)
+			state.attachedTo = null;
+	}
+
+
+	@property string ModelFilename()			{ return "shitkicker"; }
+
+	@property float LightAttackStrength()		{ return 0.0; }
+	@property float LightAttackBackStrength()	{ return LightAttackStrength; }
+	@property float LightAttackHitTime()		{ return 0.0; }
+	@property float LightAttackCooldown()		{ return 0.0; }
+
+	@property float HeavyAttackStrength()		{ return 0.0; }
+	@property float HeavyAttackBackStrength()	{ return HeavyAttackStrength; }
+	@property float HeavyAttackHitTime()		{ return 0.0; }
+	@property float HeavyAttackCooldown()		{ return 0.0; }
+
+	@property float SpecialAttackStrength()		{ return 0.0; }
+	@property float SpecialAttackBackStrength()	{ return SpecialAttackStrength; }
+	@property float SpecialAttackHitTime()		{ return 0.0; }
+	@property float SpecialAttackCooldown()		{ return 0.0; }
 }

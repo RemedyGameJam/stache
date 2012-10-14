@@ -11,7 +11,7 @@
       <music track="m1" />
     </properties>
     <entities>
-      <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="40" z="3" facing="right" />
+      <entity type="Combatant" name="Player1" defaultstache="Freddy1" x="40" z="3" facing="right" />
       <entity type="Combatant" name="Player2" defaultstache="Hulk2" x="60" z="3" facing="left" />
       <entity type="Combatant" name="Player3" defaultstache="Hulk3" x="40" z="27" facing="right" />
       <entity type="Combatant" name="Player4" defaultstache="Hulk4" x="60" z="27" facing="left" />
