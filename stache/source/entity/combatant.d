@@ -80,8 +80,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		mattDamon = MFMaterial_Create("MattDamon");
 
-		static int x = 0;
-		soundSet = new SoundSet("player" ~ to!string((1 - x++) + 1));
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -274,9 +272,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 				AttackTimeTillHit = Stache.LightAttackHitTime;
 				AttackTimeCooldown = Stache.LightAttackCooldown;
 
-				if(soundSet)
-					soundSet.Play("light");
-
+				Stache.PlaySound("light");
 				Stache.SetAnimation("light_wind");
 				state.attackAnim = "light_blow";
 			}
@@ -295,9 +291,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 				AttackTimeTillHit = Stache.HeavyAttackHitTime;
 				AttackTimeCooldown = Stache.HeavyAttackCooldown;
 
-				if(soundSet)
-					soundSet.Play("heavy");
-
+				Stache.PlaySound("heavy");
 				Stache.SetAnimation("heavy_wind");
 				state.attackAnim = "heavy_blow";
 			}
@@ -316,9 +310,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 				AttackTimeTillHit = Stache.SpecialAttackHitTime;
 				AttackTimeCooldown = Stache.SpecialAttackCooldown;
 
-				if(soundSet)
-					soundSet.Play("special");
-
+				Stache.PlaySound("special");
 				Stache.SetAnimation("special_wind");
 				state.attackAnim = "special_blow";
 			}
@@ -327,7 +319,11 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnBlock()
 	{
+		if (ActiveAttacks)
+			return;
+
 		ActiveMoves = ActiveMoves | ISheeple.Moves.Block;
+
 		if (ValidStache)
 			Stache.SetAnimation("idle");
 	}
@@ -335,6 +331,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnUnblock()
 	{
 		ActiveMoves = ActiveMoves & ~ISheeple.Moves.Block;
+
+		if (moveDirection.magSq3() > 0)
+			Stache.SetAnimation("walk");
 	}
 
 	void OnMove(MFVector direction)
@@ -353,6 +352,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnReceiveAttack(Moves type, float strength)
 	{
 		state.health = max(0, state.health - strength);
+
+		if(ValidStache)
+			Stache.PlaySound("hit");
 	}
 
 	@property bool CanMove() { return true; }
@@ -362,8 +364,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property float Health() { return state.health / state.healthMax; }
 	@property float DamageDealt() { return state.damageDealt; }
 
-	@property bool IsAttacking() { return ActiveAttacks != ISheeple.Moves.AllAttacks; }
-	@property bool IsBlocking() { return (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }
+	@property bool IsAttacking() { return (ActiveAttacks & ISheeple.Moves.AllAttacks) != 0; }
+	@property bool IsBlocking() { return !IsAttacking && (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }
 	@property bool IsRunning() { return false; }
 
 	private @property float MoveSpeed() { return DefaultMoveSpeed * (IsRunning ? DefaultMoveSpeedRunModifier : 1); }
@@ -498,6 +500,4 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	CollisionManager colMan;
 
 	MFMaterial* mattDamon;
-
-	SoundSet soundSet;
 }
