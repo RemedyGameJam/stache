@@ -22,8 +22,8 @@
     <mesh name="fall1" filename="magnum_fall_01" />
     <mesh name="fall2" filename="magnum_fall_02" />
     <mesh name="fall3" filename="magnum_fall_03" />
-    <mesh name="idle1" filename="magnum_walk_01" />
-    <mesh name="idle2" filename="magnum_walk_01" />
+    <mesh name="idle1" filename="magnum_idle_01" />
+    <mesh name="idle2" filename="magnum_idle_02" />
     <mesh name="slap1" filename="magnum_slap_01" />
     <mesh name="slap2" filename="magnum_slap_02" />
     <mesh name="punch1" filename="magnum_punch_01" />

@@ -218,9 +218,11 @@
    </Folder>
    <Folder name="entity">
     <File path="source\entity\combatant.d" />
+    <File path="source\entity\dictatorstache.d" />
     <File path="source\entity\freddystache.d" />
     <File path="source\entity\hulkstache.d" />
     <File path="source\entity\magnumstache.d" />
+    <File path="source\entity\paimei.d" />
     <File path="source\entity\stache.d" />
    </Folder>
    <Folder name="interface">

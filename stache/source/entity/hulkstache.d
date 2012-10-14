@@ -19,6 +19,6 @@ class HulkStache : StacheEntity
 	@property float SpecialAttackStrength()	{ return 16; }
 	@property float SpecialAttackBackStrength()	{ return 16 * 1.3; }
 	@property float SpecialAttackHitTime()	{ return 0.5; }
-	@property float SpecialAttackCooldown()	{ return 1.0; }
+	@property float SpecialAttackCooldown()	{ return 0.8; }
 
 }

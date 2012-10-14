@@ -54,9 +54,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	{
 		if (element !is null)
 		{
-			initialState.transform.x = MFVector.right * -0.01;
-			initialState.transform.y = MFVector.up * 0.01;
-			initialState.transform.z = MFVector.forward * -0.01;
+			initialState.transform.x = MFVector.right * -1;
+			initialState.transform.y = MFVector.up;
+			initialState.transform.z = MFVector.forward * -1;
 
 			initialState.transform.t.x = to!float(element.tag.attr["x"]);
 			initialState.transform.t.y = 0.0; //CollisionParameters.y;
@@ -388,7 +388,10 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			Stache.PlaySound("hit");
 
 		if (!Alive)
+		{
 			Stache.SetAnimation("death");
+			ActiveMoves = ISheeple.Moves.None;
+		}
 
 		return prevHealth - state.health;
 	}

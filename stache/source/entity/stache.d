@@ -2,7 +2,8 @@ module stache.entity.stache;
 
 public import stache.i.entity;
 
-import fuji.model;
+public import fuji.material;
+public import fuji.model;
 
 import stache.sound.soundset;
 
@@ -18,6 +19,7 @@ interface IStache
 	void OnDetach(IEntity entity);
 
 	@property string ModelFilename();
+	@property string PortraitFilename();
 	@property string SoundsetFilename();
 
 	@property float LightAttackStrength();
@@ -67,6 +69,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 	void OnReset()
 	{
+		bForceRender = false;
 		state = initialState;
 		animator.OnReset();
 	}
@@ -109,7 +112,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 	void OnRenderWorld()
 	{
 		MFModel* mesh = animator.CurrentMesh;
-		if (state.attachedTo !is null)
+		if (bForceRender || state.attachedTo !is null)
 			MFModel_Draw(mesh);
 	}
 
@@ -141,6 +144,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 
 	@property string ModelFilename()			{ return "shitkicker"; }
+	@property string PortraitFilename()			{ return "oldgregg"; }
 	@property string SoundsetFilename()			{ return "ballsucker"; }
 
 	@property float LightAttackStrength()		{ return 0.0; }
@@ -164,7 +168,10 @@ class StacheEntity : IEntity, IStache, IRenderable
 	void SetAnimation(string animName) { if (animator !is null) animator.SetAnimation(animName); }
 	void PlaySound(string animName) { if (soundSet !is null) soundSet.Play(animName); }
 
-	private MeshAnimator animator;
-	private SoundSet soundSet;
+	@property MFMaterial* Portrait() { return portrait; }
 
+	private MeshAnimator animator = null;
+	private SoundSet soundSet = null;
+	private MFMaterial* portrait = null;
+	protected bool bForceRender = false;
 }

@@ -100,8 +100,8 @@ class LoadingScreenState : IState, IRenderable
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
-		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 515, messageHeight, MFVector(0, 0, 0, 1), message);
-		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth - 1, 514, messageHeight, MFVector(1, 1, 1, 1), message);
+		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 600, messageHeight, MFVector(0, 0, 0, 1), message);
+		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth - 1, 600, messageHeight, MFVector(1, 1, 1, 1), message);
 	}
 
 	@property bool CanRenderWorld() { return true; }

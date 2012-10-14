@@ -75,5 +75,7 @@ class BattleCamera : Camera
 
 	IEntity[] entities;
 
+	@property TargetPos() { return targetMiddlePos; }
+
 	private MFVector targetMiddlePos;
 }

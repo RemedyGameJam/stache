@@ -11,10 +11,10 @@
       <music track="music" />
     </properties>
     <entities>
-      <entity type="Combatant" name="Player1" defaultstache="Magnum1" x="40" z="3" facing="right" />
-      <entity type="Combatant" name="Player2" defaultstache="Hulk2" x="60" z="3" facing="left" />
+      <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="40" z="3" facing="right" />
+      <entity type="Combatant" name="Player2" defaultstache="Dictator2" x="60" z="3" facing="left" />
       <entity type="Combatant" name="Player3" defaultstache="Freddy3" x="40" z="12" facing="right" />
-      <entity type="Combatant" name="Player4" defaultstache="Hulk4" x="60" z="12" facing="left" />
+      <entity type="Combatant" name="Player4" defaultstache="Magnum4" x="60" z="12" facing="left" />
       <entity type="HulkStache" name="Hulk1" />
       <entity type="HulkStache" name="Hulk2" />
       <entity type="HulkStache" name="Hulk3" />
@@ -27,6 +27,10 @@
       <entity type="MagnumStache" name="Magnum2" />
       <entity type="MagnumStache" name="Magnum3" />
       <entity type="MagnumStache" name="Magnum4" />
+      <entity type="DictatorStache" name="Dictator1" />
+      <entity type="DictatorStache" name="Dictator2" />
+      <entity type="DictatorStache" name="Dictator3" />
+      <entity type="DictatorStache" name="Dictator4" />
       <entity type="PaiMei" name="Judge">
         <stache_stash>
           <stache name="Hulk1" />
@@ -41,6 +45,10 @@
           <stache name="Magnum2" />
           <stache name="Magnum3" />
           <stache name="Magnum4" />
+          <stache name="Dictator1" />
+          <stache name="Dictator2" />
+          <stache name="Dictator3" />
+          <stache name="Dictator4" />
         </stache_stash>
       </entity>
     </entities>

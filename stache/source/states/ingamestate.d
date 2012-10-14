@@ -23,6 +23,7 @@ import stache.util.eventtypes;
 
 import stache.i.entity;
 import stache.entity.combatant;
+import stache.entity.paimei;
 
 import stache.thinkers.localplayer;
 import stache.thinkers.nullthinker;
@@ -156,8 +157,6 @@ class InGameState : IState
 		{
 			camera.Apply();
 
-			renderWorldEvent();
-
 			MFMaterial_SetMaterial(materials["floor"].mat);
 
 			MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
@@ -218,6 +217,9 @@ class InGameState : IState
 					MFEnd();
 				}
 			}
+
+			renderWorldEvent();
+
 		}
 		MFView_Pop();
 	}
@@ -342,6 +344,21 @@ class InGameState : IState
 				Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2), () {
 					// end round
 					roundState = RoundState.PostRound;
+
+					paiMei.ShouldRender = true;
+
+					MFMatrix t;
+
+					t.t = camera.TargetPos;
+
+					foreach(c; combatants)
+					{
+						t.t.z = min(t.t.z, c.Transform.t.z);
+					}
+
+					t.t.z -= 3;
+
+					paiMei.Transform = t;
 
 					roundEndEvent();
 				});
@@ -534,6 +551,11 @@ class InGameState : IState
 				AddCollider(cast(ICollider) entity);
 			}
 
+			if (cast(PaiMei) entity !is null)
+			{
+				paiMei = cast(PaiMei) entity;
+			}
+
 			return actualEntity;
 		}
 
@@ -613,6 +635,7 @@ class InGameState : IState
 	private IThinker[] thinkers;
 	private ICollider[] colliders;
 	private Combatant[] combatants;
+	private PaiMei paiMei;
 
 	private MFVector dimensions;
 
@@ -629,7 +652,7 @@ class InGameState : IState
 	private SoundSet sounds;
 
 	private RoundState roundState;
-	private float roundLength = 60;
+	private float roundLength = 5;
 
 	private MFFont* chinese;
 
