@@ -181,7 +181,7 @@
   <exefile>$(OutDir)\$(ProjectName)_$(ConfigurationName).exe</exefile>
   <additionalOptions />
   <preBuildCommand />
-  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Debug.dll .\bin</postBuildCommand>
+  <postBuildCommand>copy ..\Fuji\dist\lib\Fuji_Release.dll .\bin</postBuildCommand>
   <filesToClean>*.obj;*.cmd;*.build;*.json;*.dep</filesToClean>
  </Config>
  <Folder name="Stache">
