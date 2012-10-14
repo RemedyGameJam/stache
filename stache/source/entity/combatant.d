@@ -11,7 +11,17 @@ import stache.i.entity;
 import stache.i.renderable;
 import stache.i.collider;
 
+import stache.entity.stache;
+
 import std.conv;
+import std.string;
+import std.math;
+
+enum CombatantDirection
+{
+	Left,
+	Right,
+}
 
 class Combatant : ISheeple, IEntity, IRenderable, ICollider
 {
@@ -24,6 +34,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		MFMatrix transform;
 		MFVector prevPosition;
 		int health = DefaultHealth;
+		CombatantDirection facing = CombatantDirection.Left;
+		ISheeple.Moves activeMoves = ISheeple.Moves.None;
+		IStache stache = null;
 	}
 
 	/// IEntity
@@ -39,6 +52,16 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			initialState.transform.t.y = 0.0; //CollisionParameters.y;
 			initialState.transform.t.z = to!float(element.tag.attr["z"]);
 
+			string facingVal = element.tag.attr["facing"];
+			foreach(m; __traits(allMembers, CombatantDirection))
+			{
+				if (toLower(m) == toLower(facingVal))
+				{
+					initialState.facing = mixin("CombatantDirection." ~ m);
+					break;
+				}
+			}
+
 			initialState.prevPosition = initialState.transform.t;
 
 			name = element.tag.attr["name"];
@@ -52,6 +75,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnReset()
 	{
 		state = initialState;
+		UpdateFacing();
 	}
 
 	void OnDestroy()
@@ -67,19 +91,53 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		if (moveDirection.magSq3() > 0)
 		{
-			MFVector normalisedDir = normalise(moveDirection);
+			if (moveDirection.x >= 0)
+				state.facing = CombatantDirection.Right;
+			else
+				state.facing = CombatantDirection.Left;
 
-			state.transform.x = cross3(MFVector.up, normalisedDir) * -0.01;
-			state.transform.y = MFVector.up * 0.01;
-			state.transform.z = normalisedDir * -0.01;
+			UpdateFacing();
 		}
+	}
 
-		
+	private void UpdateFacing()
+	{
+		float angle = MFDeg2Rad!60;
+		if (state.facing == CombatantDirection.Left)
+			angle *= -1;
+
+		MFVector normalisedDir;
+		normalisedDir.x = sin(angle);
+		normalisedDir.z = -cos(angle);
+
+//		MFVector normalisedDir = normalise(moveDirection);
+
+		state.transform.x = cross3(MFVector.up, normalisedDir) * -0.01;
+		state.transform.y = MFVector.up * 0.01;
+		state.transform.z = normalisedDir * -0.01;
 	}
 
 	void OnPostUpdate()
 	{
 		MFModel_SetWorldMatrix(model, state.transform);
+
+		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
+		{
+			MFVector attackPos = Transform.t;
+			if (Facing == CombatantDirection.Left)
+				attackPos.x -= CollisionParameters.x;
+			else
+				attackPos.x += CollisionParameters.x;
+
+			ICollider[] found = colMan.FindCollisionSphere(attackPos, 0.5, CollisionClass.Combatant, cast(ICollider) this);
+
+			foreach(collider; found)
+			{
+				int foo = 1;
+			}
+
+			ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+		}
 	}
 
 	@property bool CanUpdate() { return true; }
@@ -90,23 +148,36 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	private @property Position(MFVector newPos) { return (state.transform.t = newPos); }
 	private @property PrevPosition() { return state.prevPosition; }
 	private @property PrevPosition(MFVector newPrevPos) { return state.prevPosition; }
+	private @property Facing() { return state.facing; }
 
-	private State	initialState,
-					state;
+	private @property ActiveMoves() { return state.activeMoves; }
+	private @property ActiveMoves(ISheeple.Moves newMoves) { return (state.activeMoves = newMoves); }
 
-	private string	name;
+	private @property ValidStache() { return state.stache !is null; }
 
-	/// IThinker
+	private State				initialState,
+								state;
+
+	private string				name;
+
+	/// ISheeple
+
 	void OnLightAttack()
 	{
+		if (ValidStache)
+			ActiveMoves = ActiveMoves | ISheeple.Moves.LightAttack;
 	}
 
 	void OnHeavyAttack()
 	{
+		if (ValidStache)
+			ActiveMoves = ActiveMoves | ISheeple.Moves.HeavyAttack;
 	}
 
 	void OnSpecialAttack()
 	{
+		if (ValidStache)
+			ActiveMoves = ActiveMoves | ISheeple.Moves.SpecialAttack;
 	}
 
 	void OnBlock()
@@ -120,6 +191,10 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnMove(MFVector direction)
 	{
 		moveDirection = direction * MoveSpeed;
+	}
+	
+	void OnReceiveAttack(Moves type, float strength)
+	{
 	}
 
 	@property bool CanMove() { return true; }
@@ -135,7 +210,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	private @property float MoveSpeed() { return DefaultMoveSpeed * (IsRunning ? DefaultMoveSpeedRunModifier : 1); }
 
 	MFVector moveDirection;
-
 
 	///IRenderable
 	void OnRenderWorld()
@@ -175,6 +249,11 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property bool CanRenderGUI() { return false; }
 
 	/// ICollider
+	void OnAddCollision(CollisionManager owner)
+	{
+		colMan = owner;
+	}
+
 	@property MFVector CollisionPosition() { return state.transform.t; }
 	@property MFVector CollisionPosition(MFVector pos)
 	{
@@ -186,7 +265,10 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property MFVector CollisionPrevPosition() { return state.prevPosition; }
 
 	@property CollisionType CollisionTypeEnum() { return CollisionType.Sphere; }
+	@property CollisionClass CollisionClassEnum() { return CollisionClass.Combatant; }
 	@property MFVector CollisionParameters() { return MFVector(1.3, 1.3, 1.3, 1.3); } // { return MFVector(0.51, 0.51, 0.51, 0.51); }
+
+	CollisionManager colMan;
 
 	MFMaterial* mattDamon;
 	MFModel* model;

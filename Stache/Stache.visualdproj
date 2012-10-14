@@ -218,6 +218,7 @@
    </Folder>
    <Folder name="entity">
     <File path="source\entity\combatant.d" />
+    <File path="source\entity\hulkstache.d" />
     <File path="source\entity\stache.d" />
    </Folder>
    <Folder name="interface">

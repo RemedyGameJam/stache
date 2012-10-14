@@ -82,6 +82,7 @@ class InGameState : IState
 	void OnUpdate()
 	{
 		thinkEvent();
+
 		updateEvent();
 		collision.OnUpdate();
 		postUpdateEvent();

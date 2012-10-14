@@ -11,14 +11,24 @@ enum CollisionType
 	Box,
 }
 
+enum CollisionClass // Hack-ish
+{
+	None = 0,
+	Combatant = 1 << 0,
+	Stache = 1 << 1,
+}
+
 interface ICollider
 {
+	void OnAddCollision(CollisionManager owner);
+
 	@property MFVector CollisionPosition();
 	@property MFVector CollisionPosition(MFVector pos);
 
 	@property MFVector CollisionPrevPosition();
 
 	@property CollisionType CollisionTypeEnum();
+	@property CollisionClass CollisionClassEnum();
 	@property MFVector CollisionParameters();
 }
 
@@ -83,6 +93,7 @@ class CollisionManager
 	void AddCollider(ICollider collider)
 	{
 		colliders ~= collider;
+		collider.OnAddCollision(this);
 	}
 
 	void RemoveCollider(ICollider collider)
@@ -90,6 +101,30 @@ class CollisionManager
 		int index = countUntil(colliders, collider);
 		if (index != -1)
 			remove(colliders, index);
+	}
+
+	ICollider[] FindCollisionSphere(MFVector pos, float radius, CollisionClass validTypes, ICollider ignore = null)
+	{
+		ICollider[] found;
+
+		foreach(collider; colliders)
+		{
+			if (collider == ignore)
+				continue;
+
+			if ((collider.CollisionClassEnum & validTypes) == CollisionClass.None)
+				continue;
+
+			MFVector colliderPos = collider.CollisionPosition;
+
+			if (collider.CollisionTypeEnum == CollisionType.Sphere
+				&& MFCollision_SphereSphereTest(pos, radius, colliderPos, collider.CollisionParameters.x, null))
+			{
+				found ~= collider;
+			}
+		}
+
+		return found;
 	}
 
 	private ICollider[] colliders;
