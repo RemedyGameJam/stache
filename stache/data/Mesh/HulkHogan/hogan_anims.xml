@@ -1,0 +1,40 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<root>
+  <meshes>
+    <mesh name="walk1" filename="hogan_walk_01" />
+    <mesh name="walk2" filename="hogan_walk_02" />
+    <mesh name="walk3" filename="hogan_walk_03" />
+    <mesh name="walk4" filename="hogan_walk_04" />
+    <mesh name="punch1" filename="hogan_punch_01" />
+    <mesh name="punch2" filename="hogan_punch_02" />
+  </meshes>
+  <anims>
+    <anim name="idle" time="100000" loop="0" default="1">
+      <frame mesh="walk1" percent="1" />
+    </anim>    
+    <anim name="walk" time="0.8" loop="1" default="0">
+      <frame mesh="walk1" percent="0.25" />
+      <frame mesh="walk2" percent="0.25" />
+      <frame mesh="walk3" percent="0.25" />
+      <frame mesh="walk4" percent="0.25" />
+    </anim>
+    <anim name="light_wind" time="100" loop="0" default="0">
+      <frame mesh="punch1" percent="1" />
+    </anim>
+    <anim name="light_blow" time="100" loop="0" default="0">
+      <frame mesh="punch2" percent="1" />
+    </anim>
+    <anim name="heavy_wind" time="100" loop="0" default="0">
+      <frame mesh="punch1" percent="1" />
+    </anim>
+    <anim name="heavy_blow" time="100" loop="0" default="0">
+      <frame mesh="punch2" percent="1" />
+    </anim>
+    <anim name="special_wind" time="100" loop="0" default="0">
+      <frame mesh="punch1" percent="1" />
+    </anim>
+    <anim name="special_blow" time="100" loop="0" default="0">
+      <frame mesh="punch2" percent="1" />
+    </anim>
+  </anims>
+</root>

@@ -245,6 +245,7 @@
    <Folder name="util">
     <File path="source\util\event.d" />
     <File path="source\util\eventtypes.d" />
+    <File path="source\util\meshanimator.d" />
    </Folder>
    <File path="source\game.d" />
    <File path="source\winmain.d" />

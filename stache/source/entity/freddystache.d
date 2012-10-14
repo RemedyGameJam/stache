@@ -4,12 +4,12 @@ public import stache.entity.stache;
 
 class FreddyStache : StacheEntity
 {
-	@property string ModelFilename()			{ return "Hogan_walk_static"; }
+	@property string ModelFilename()			{ return "hogan_anims.xml"; }
 
 	/// IStache
 	@property float LightAttackStrength()		{ return 3; }
 	@property float LightAttackBackStrength()	{ return LightAttackStrength * 2; }
-	@property float LightAttackHitTime()		{ return 0.045; }
+	@property float LightAttackHitTime()		{ return 0.07; }
 	@property float LightAttackCooldown()		{ return 0.3; }
 
 	@property float HeavyAttackStrength()		{ return 6; }

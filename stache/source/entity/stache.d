@@ -3,8 +3,8 @@ module stache.entity.stache;
 public import stache.i.entity;
 
 import fuji.model;
-
 import stache.i.renderable;
+import stache.util.meshanimator;
 
 import std.conv;
 
@@ -53,7 +53,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 			name = element.tag.attr["name"];
 		}
 
-		model = MFModel_Create(ModelFilename.ptr);
+		animator = new MeshAnimator(ModelFilename);
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -63,16 +63,19 @@ class StacheEntity : IEntity, IStache, IRenderable
 	void OnReset()
 	{
 		state = initialState;
+		animator.OnReset();
 	}
 
 	void OnDestroy()
 	{
-		MFModel_Destroy(model);
+		animator.OnDestroy();
+		animator = null;
 	}
 
 	// Do movement and other type logic in this one
 	void OnUpdate()
 	{
+		animator.OnUpdate();
 	}
 
 	// Need to resolve post-movement collisions, such as punching someone? Here's the place to do it.
@@ -85,9 +88,10 @@ class StacheEntity : IEntity, IStache, IRenderable
 	@property MFMatrix Transform(MFMatrix t)
 	{
 		state.transform = t;
-		MFModel_SetWorldMatrix(model, state.transform);
+		MFModel* mesh = animator.CurrentMesh;
+		MFModel_SetWorldMatrix(mesh, state.transform);
 
-		return state.transform ;
+		return state.transform;
 	}
 	@property string Name()						{ return name; }
 
@@ -99,8 +103,9 @@ class StacheEntity : IEntity, IStache, IRenderable
 	/// IRenderable
 	void OnRenderWorld()
 	{
+		MFModel* mesh = animator.CurrentMesh;
 		if (state.attachedTo !is null)
-			MFModel_Draw(model);
+			MFModel_Draw(mesh);
 	}
 
 	void OnRenderGUI(MFRect orthoRect)
@@ -110,7 +115,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 	@property bool CanRenderWorld()				{ return true; }
 	@property bool CanRenderGUI()				{ return false; }
 
-	private MFModel* model;
+	private MeshAnimator animator;
 
 
 	/// IStache
@@ -148,4 +153,9 @@ class StacheEntity : IEntity, IStache, IRenderable
 	@property float SpecialAttackBackStrength()	{ return SpecialAttackStrength; }
 	@property float SpecialAttackHitTime()		{ return 0.0; }
 	@property float SpecialAttackCooldown()		{ return 0.0; }
+
+
+	// Special methods
+
+	void SetAnimation(string animName) { animator.SetAnimation(animName); }
 }

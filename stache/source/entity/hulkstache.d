@@ -4,7 +4,7 @@ public import stache.entity.stache;
 
 class HulkStache : StacheEntity
 {
-	@property string ModelFilename()		{ return "Hogan_walk_static"; }
+	@property string ModelFilename()		{ return "hogan_anims.xml"; }
 
 	/// IStache
 	@property float LightAttackStrength()	{ return 5; }

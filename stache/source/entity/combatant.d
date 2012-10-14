@@ -46,6 +46,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		float attackBackStrength = 0.0;
 		float attackTimeTillHit = 0.0;
 		float attackTimeCooldown = 0.0;
+		string attackAnim;
 	}
 
 	/// IEntity
@@ -123,8 +124,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			Position = Position + moveDirection * MFSystem_GetTimeDelta();
 		}
 
-		moveDirection *= 0.75;
-
 		if (moveDirection.magSq3() > 0)
 		{
 			if (moveDirection.x >= 0)
@@ -133,6 +132,16 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 				state.facing = CombatantDirection.Left;
 
 			UpdateFacing();
+
+			moveDirection *= 0.75;
+
+			if (moveDirection.magSq3() < 0.01 * 0.01)
+			{
+				moveDirection = MFVector.zero;
+				if (ValidStache && !ActiveAttacks)
+					Stache.SetAnimation("idle");
+			}
+
 		}
 	}
 
@@ -148,16 +157,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 //		MFVector normalisedDir = normalise(moveDirection);
 
-		state.transform.x = cross3(MFVector.up, normalisedDir) * -0.01;
-		state.transform.y = MFVector.up * 0.01;
-		state.transform.z = normalisedDir * -0.01;
+		state.transform.x = cross3(MFVector.up, normalisedDir) * -1;
+		state.transform.y = MFVector.up * 1;
+		state.transform.z = normalisedDir * -1;
 	}
 
 	void OnPostUpdate()
 	{
-		if (ValidStache)
-			Stache.Transform = Transform;
-
 		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
 		{
 			if (AttackTimeTillHit > 0)
@@ -189,6 +195,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 							}
 						}
 					}
+
+					if (ValidStache)
+						Stache.SetAnimation(state.attackAnim);
 				}
 			}
 			else if (AttackTimeCooldown > 0)
@@ -197,13 +206,21 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 				if (AttackTimeCooldown <= 0)
 				{
 					ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+					if (ValidStache)
+						Stache.SetAnimation("idle");
 				}
 			}
 			else
 			{
 				ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+
+				if (ValidStache)
+					Stache.SetAnimation("idle");
 			}
 		}
+
+		if (ValidStache)
+			Stache.Transform = Transform;
 	}
 
 	@property bool CanUpdate() { return true; }
@@ -258,6 +275,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 				if(soundSet)
 					soundSet.Play("light");
+
+				Stache.SetAnimation("light_wind");
+				state.attackAnim = "light_blow";
 			}
 		}
 	}
@@ -276,6 +296,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 				if(soundSet)
 					soundSet.Play("heavy");
+
+				Stache.SetAnimation("heavy_wind");
+				state.attackAnim = "heavy_blow";
 			}
 		}
 	}
@@ -294,6 +317,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 				if(soundSet)
 					soundSet.Play("special");
+
+				Stache.SetAnimation("special_wind");
+				state.attackAnim = "special_blow";
 			}
 		}
 	}
@@ -301,6 +327,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnBlock()
 	{
 		ActiveMoves = ActiveMoves | ISheeple.Moves.Block;
+		if (ValidStache)
+			Stache.SetAnimation("idle");
 	}
 
 	void OnUnblock()
@@ -312,7 +340,12 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	{
 		if (!ActiveAttacks)
 		{
+			float lastMoveMag = moveDirection.mag3();
+
 			moveDirection = direction * MoveSpeed;
+
+			if (!IsBlocking() && ValidStache && lastMoveMag <= 0)
+				Stache.SetAnimation("walk");
 		}
 	}
 	
@@ -358,9 +391,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			MFPrimitive(PrimType.TriList | PrimType.Prelit, 0);
 
 			MFMatrix shieldTransform = state.transform;
-			shieldTransform.x *= 300;
-			shieldTransform.y *= 300;
-			shieldTransform.z *= 300;
+			shieldTransform.x *= 3;
+			shieldTransform.y *= 3;
+			shieldTransform.z *= 3;
 			shieldTransform.t += shieldTransform.z * (-CollisionParameters.z * 0.5);
 
 			shieldTransform.t.y += CollisionParameters.y;
