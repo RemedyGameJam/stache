@@ -19,17 +19,19 @@
     <group name="player4">
       <sound file="pai_mei_player_4" />
     </group>
-    <group name="rank1">
+    <group name="winner">
       <sound file="pai_mei_winner" />
     </group>
-    <group name="rank2">
+    <group name="rank1">
       <sound file="pai_mei_your_kung_fu_is_good" />
+    </group>
+    <group name="rank2">
       <sound file="pai_mei_very_good" />
     </group>
     <group name="rank3">
       <sound file="pai_mei_practice_harder" />
     </group>
-    <group name="rank4">
+    <group name="loser">
       <sound file="pai_mei_no_soup" />
     </group>
   </soundset>

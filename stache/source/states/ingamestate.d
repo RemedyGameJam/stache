@@ -12,6 +12,7 @@ import std.xml;
 import std.string;
 import std.conv;
 import std.random;
+import std.algorithm;
 
 import stache.battlecamera;
 
@@ -89,43 +90,12 @@ class InGameState : IState
 		// Leaks like a bitch
 		//MFHeap_Free(rawData);
 
-
-		roundState = RoundState.Waiting;
-
-		Game.TimeKeeper.MarkAtNextMeasure(
-			() {
-				// pre-round
-				roundState = RoundState.PreRound;
-
-				if(music)
-					music.Playing = true;
-
-				Game.TimeKeeper.MarkIn(8,
-					() {
-						// begin round
-						roundState = RoundState.Battle;
-
-						roundBeginEvent();
-
-						Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2),
-							() {
-								// end round
-								roundState = RoundState.PostRound;
-
-								roundEndEvent();
-							}
-						);
-					}
-				);
-			}
-		);
-
 		Game.TimeKeeper.AddMeasureEvent(() {
 			if(roundState == RoundState.Battle)
 				music.SetTrackVolume(uniform(1,3), uniform(0,2) ? 1 : 0);
 		});
 
-		resetEvent();
+		Reset();
 	}
 
 	void OnExit()
@@ -166,6 +136,18 @@ class InGameState : IState
 	{
 		if(sounds)
 			sounds.Play("end");
+
+		// rank the players!
+		playerRanking = new Ranking[combatants.length];
+		foreach(i, c; combatants)
+		{
+			playerRanking[i].player = i;
+			playerRanking[i].score = (c.Health > 0 ? 100 : 0) + c.DamageDealt + c.Health*0.5;
+		}
+		sort!("a.score > b.score")(playerRanking);
+
+		nextComment = 5.0f;
+		commentsSpoken = 0;
 	}
 
 	@property StateMachine Owner() { return owner; }
@@ -297,16 +279,88 @@ class InGameState : IState
 
 			case PostRound:
 				float stateTimer = Game.TimeKeeper.SinceMark;
-				if(stateTimer < 5)
+				if(stateTimer < 3)
 				{
 					string battle = "Round over!";
 					float halfMessageWidth = MFFont_GetStringWidth(chinese, battle.ptr, 200, 0, -1, null) * 0.5;
 					MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 400 - 100, 200, MFVector.white, battle.ptr);
 				}
+
+				if(Game.TimeKeeper.SinceMark >= nextComment)
+				{
+					int player = rankingStep / 3;
+					if(player >= combatants.length)
+					{
+						// finished with this.. start over!
+						Reset();
+					}
+					else
+					{
+						int step = rankingStep % 3;
+
+						switch(step)
+						{
+							case 0:
+								nextComment += sounds.Play("player" ~ to!string(playerRanking[player].player + 1));
+								rankingStep++;
+								break;
+							case 1:
+								if(player == 0 && playerRanking[0].score > playerRanking[1].score)
+									nextComment += sounds.Play("winner");
+								else if(player == combatants.length-1 && playerRanking[player].score < playerRanking[player-1].score)
+									nextComment += sounds.Play("loser");
+								else
+									nextComment += sounds.Play("rank" ~ to!string(1 + commentsSpoken++));
+								rankingStep++;
+								break;
+							case 2:
+								nextComment += 0.5;
+								rankingStep++;
+								break;
+							default:
+								break;
+						}
+					}
+				}
 				break;
 
 			default:
 		}
+	}
+
+	void Reset()
+	{
+		roundState = RoundState.Waiting;
+
+		Game.TimeKeeper.MarkAtNextMeasure(
+			() {
+				// pre-round
+				roundState = RoundState.PreRound;
+
+				if(music)
+					music.Playing = true;
+
+				Game.TimeKeeper.MarkIn(8,
+					() {
+						// begin round
+						roundState = RoundState.Battle;
+
+						roundBeginEvent();
+
+						Game.TimeKeeper.MarkIn(cast(int)(roundLength * 2),
+							() {
+								// end round
+								roundState = RoundState.PostRound;
+
+								roundEndEvent();
+							}
+						);
+					}
+				);
+			}
+		);
+
+		resetEvent();
 	}
 
 	@property float RoundTimeRemaining()
@@ -437,6 +491,7 @@ class InGameState : IState
 				{
 					string track = musicTag.tag.attr["track"];
 					music = new Music(track);
+					music.SetMasterVolume(0.6);
 
 					musicTag.parse();
 				};
@@ -585,4 +640,15 @@ class InGameState : IState
 	private float roundLength = 60;
 
 	private MFFont* chinese;
+
+	struct Ranking
+	{
+		int player;
+		float score;
+	}
+
+	Ranking[] playerRanking;
+	int rankingStep;
+	int commentsSpoken;
+	float nextComment;
 }
