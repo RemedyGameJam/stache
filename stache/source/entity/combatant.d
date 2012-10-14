@@ -28,7 +28,7 @@ enum CombatantDirection
 
 class Combatant : ISheeple, IEntity, IRenderable, ICollider
 {
-	const int DefaultHealth = 100;
+	const float DefaultHealth = 100;
 	const float DefaultMoveSpeed = 15;
 	const float DefaultMoveSpeedRunModifier = 1.65;
 
@@ -36,8 +36,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	{
 		MFMatrix transform;
 		MFVector prevPosition;
-		int healthMax = DefaultHealth;
-		int health = DefaultHealth;
+		float healthMax = DefaultHealth;
+		float health = DefaultHealth;
 		CombatantDirection facing = CombatantDirection.Left;
 		StacheEntity stache = null;
 
@@ -175,7 +175,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 					foreach(collider; found)
 					{
-						
+						Combatant c = cast(Combatant) collider;
+						if (found !is null)
+							c.OnReceiveAttack(ActiveAttacks, AttackStrength);
 					}
 				}
 			}
@@ -294,13 +296,14 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	
 	void OnReceiveAttack(Moves type, float strength)
 	{
+		state.health = max(0, state.health - strength);
 	}
 
 	@property bool CanMove() { return true; }
 	@property bool CanAttack() { return true; }
 	@property bool CanBlock() { return true; }
 
-	@property int Health() { return state.health / state.healthMax; }
+	@property float Health() { return state.health / state.healthMax; }
 
 	@property bool IsAttacking() { return ActiveAttacks != ISheeple.Moves.AllAttacks; }
 	@property bool IsBlocking() { return (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }

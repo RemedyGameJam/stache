@@ -28,7 +28,7 @@ interface ISheeple
 	@property bool CanAttack();
 	@property bool CanBlock();
 
-	@property int Health();
+	@property float Health();
 
 	@property bool IsAttacking();
 	@property bool IsBlocking();
