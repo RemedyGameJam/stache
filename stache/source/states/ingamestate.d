@@ -83,7 +83,7 @@ class InGameState : IState
 
 		Game.TimeKeeper.AddMeasureEvent(() {
 			if(roundState == RoundState.Battle)
-				music.SetTrackVolume(uniform(1,3), uniform(0,2) ? 1 : 0);
+				music.SetTrackVolume(1, uniform(0,2) ? 1 : 0);
 		});
 
 		Reset();
@@ -478,7 +478,7 @@ class InGameState : IState
 				{
 					string track = musicTag.tag.attr["track"];
 					music = new Music(track);
-					music.SetMasterVolume(0.6);
+					music.SetMasterVolume(0.5);
 
 					musicTag.parse();
 				};

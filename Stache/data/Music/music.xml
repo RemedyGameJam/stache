@@ -1,0 +1,7 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<root>
+  <music>
+    <stream track="001_music.mp3" vol="1" />
+    <stream track="002_music.mp3" vol="0" />
+  </music>
+</root>
