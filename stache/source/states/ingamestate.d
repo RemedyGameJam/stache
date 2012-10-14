@@ -80,6 +80,8 @@ class InGameState : IState
 
 		collision.PlaneDimensions = dimensions;
 
+		resolveEvent(entities);
+
 		postUpdateEvent.subscribe(&camera.OnPostUpdate);
 		resetEvent.subscribe(&camera.OnReset);
 
@@ -380,13 +382,16 @@ class InGameState : IState
 			{
 				AddCollider(cast(ICollider) entity);
 			}
+
+			return actualEntity;
 		}
 
-		return cast(IEntity) entity;
+		return null;
 	}
 
 	void AddEntity(IEntity entity)
 	{
+		resolveEvent.subscribe(&entity.OnResolve);
 		resetEvent.subscribe(&entity.OnReset);
 
 		if (entity.CanUpdate)
@@ -395,7 +400,7 @@ class InGameState : IState
 			postUpdateEvent.subscribe(&entity.OnPostUpdate);
 		}
 
-		entities ~= entity;
+		entities[entity.Name] = entity;
 	}
 
 	void AddRenderable(IRenderable renderable)
@@ -435,6 +440,8 @@ class InGameState : IState
 		collision.AddCollider(collider);
 	}
 
+	private IEntityMapEvent resolveEvent;
+
 	private VoidEvent resetEvent;
 
 	private VoidEvent thinkEvent;
@@ -447,7 +454,7 @@ class InGameState : IState
 	private VoidEvent roundBeginEvent;
 	private VoidEvent roundEndEvent;
 
-	private IEntity[] entities;
+	private IEntity[string] entities;
 	private IThinker[] thinkers;
 	private ICollider[] colliders;
 

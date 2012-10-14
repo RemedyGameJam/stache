@@ -6,6 +6,7 @@ public import fuji.matrix;
 interface IEntity
 {
 	void OnCreate(ElementParser element);
+	void OnResolve(IEntity[string] loadedEntities);
 	void OnReset();
 	void OnDestroy();
 

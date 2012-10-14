@@ -18,6 +18,7 @@ import stache.entity.stache;
 import std.conv;
 import std.string;
 import std.math;
+import std.algorithm;
 
 enum CombatantDirection
 {
@@ -37,8 +38,12 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		MFVector prevPosition;
 		int health = DefaultHealth;
 		CombatantDirection facing = CombatantDirection.Left;
+		StacheEntity stache = null;
+
 		ISheeple.Moves activeMoves = ISheeple.Moves.None;
-		IStache stache = null;
+		float attackStrength = 0.0;
+		float attackTimeTillHit = 0.0;
+		float attackTimeCooldown = 0.0;
 	}
 
 	/// IEntity
@@ -67,6 +72,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			initialState.prevPosition = initialState.transform.t;
 
 			name = element.tag.attr["name"];
+			defaultStache = element.tag.attr["defaultstache"];
 		}
 
 		mattDamon = MFMaterial_Create("MattDamon");
@@ -74,6 +80,27 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		model = MFModel_Create("Hogan_walk_static");
 
 		soundSet = new SoundSet("s1");
+	}
+
+	void OnResolve(IEntity[string] loadedEntities)
+	{
+		if (loadedEntities is null)
+			return;
+
+		IEntity* ent = defaultStache in loadedEntities;
+		if (!ent)
+			return;
+
+		StacheEntity stache = cast(StacheEntity) *ent;
+
+		if (stache !is null)
+		{
+			initialState.stache = stache;
+		}
+		else
+		{
+			// TODO: stuff
+		}
 	}
 
 	void OnReset()
@@ -90,8 +117,13 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnUpdate()
 	{
-		PrevPosition = Position;
-		Position = Position + moveDirection * MFSystem_GetTimeDelta();
+		if (!ActiveMoves)
+		{
+			PrevPosition = Position;
+			Position = Position + moveDirection * MFSystem_GetTimeDelta();
+		}
+
+		moveDirection *= 0.75;
 
 		if (moveDirection.magSq3() > 0)
 		{
@@ -127,20 +159,37 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 		if ((ActiveMoves & ISheeple.Moves.AllAttacks) != ISheeple.Moves.None)
 		{
-			MFVector attackPos = Transform.t;
-			if (Facing == CombatantDirection.Left)
-				attackPos.x -= CollisionParameters.x;
-			else
-				attackPos.x += CollisionParameters.x;
-
-			ICollider[] found = colMan.FindCollisionSphere(attackPos, 0.5, CollisionClass.Combatant, cast(ICollider) this);
-
-			foreach(collider; found)
+			if (AttackTimeTillHit > 0)
 			{
-				int foo = 1;
-			}
+				AttackTimeTillHit = max(0, AttackTimeTillHit - MFSystem_GetTimeDelta());
+				if (AttackTimeTillHit <= 0)
+				{
+					MFVector attackPos = Transform.t;
+					if (Facing == CombatantDirection.Left)
+						attackPos.x -= CollisionParameters.x;
+					else
+						attackPos.x += CollisionParameters.x;
 
-			ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+					ICollider[] found = colMan.FindCollisionSphere(attackPos, 0.5, CollisionClass.Combatant, cast(ICollider) this);
+
+					foreach(collider; found)
+					{
+						
+					}
+				}
+			}
+			else if (AttackTimeCooldown > 0)
+			{
+				AttackTimeCooldown = max(0, AttackTimeCooldown - MFSystem_GetTimeDelta());
+				if (AttackTimeCooldown <= 0)
+				{
+					ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+				}
+			}
+			else
+			{
+				ActiveMoves = ActiveMoves & ~ISheeple.Moves.AllAttacks;
+			}
 		}
 	}
 
@@ -155,39 +204,75 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	private @property Facing() { return state.facing; }
 
 	private @property ActiveMoves() { return state.activeMoves; }
+	private @property ActiveAttacks() { return (state.activeMoves & ISheeple.Moves.AllAttacks); }
 	private @property ActiveMoves(ISheeple.Moves newMoves) { return (state.activeMoves = newMoves); }
 
+	private @property AttackStrength()				{ return state.attackStrength; }
+	private @property AttackStrength(float s)		{ return (state.attackStrength = s); }
+
+	private @property AttackTimeTillHit()			{ return state.attackTimeTillHit; }
+	private @property AttackTimeTillHit(float t)	{ return (state.attackTimeTillHit = t); }
+
+	private @property AttackTimeCooldown()			{ return state.attackTimeCooldown; }
+	private @property AttackTimeCooldown(float t)	{ return (state.attackTimeCooldown = t); }
+
 	private @property ValidStache() { return state.stache !is null; }
+	private @property Stache() { return state.stache; }
 
 	private State				initialState,
 								state;
 
 	private string				name;
+	private string				defaultStache;
 
 	/// ISheeple
 
 	void OnLightAttack()
 	{
-		if (ValidStache)
-			ActiveMoves = ActiveMoves | ISheeple.Moves.LightAttack;
-		if(soundSet)
-			soundSet.Play("light");
+		if (!ActiveAttacks)
+		{
+			if (ValidStache)
+			{
+				ActiveMoves = ActiveMoves | ISheeple.Moves.LightAttack;
+				AttackStrength = Stache.LightAttackStrength;
+				AttackTimeTillHit = Stache.LightAttackHitTime;
+				AttackTimeCooldown = Stache.LightAttackCooldown;
+			}
+			if(soundSet)
+				soundSet.Play("light");
+		}
 	}
 
 	void OnHeavyAttack()
 	{
-		if (ValidStache)
-			ActiveMoves = ActiveMoves | ISheeple.Moves.HeavyAttack;
-		if(soundSet)
-			soundSet.Play("heavy");
+		if (!ActiveAttacks)
+		{
+			if (ValidStache)
+			{
+				ActiveMoves = ActiveMoves | ISheeple.Moves.HeavyAttack;
+				AttackStrength = Stache.HeavyAttackStrength;
+				AttackTimeTillHit = Stache.HeavyAttackHitTime;
+				AttackTimeCooldown = Stache.HeavyAttackCooldown;
+			}
+			if(soundSet)
+				soundSet.Play("heavy");
+		}
 	}
 
 	void OnSpecialAttack()
 	{
-		if (ValidStache)
-			ActiveMoves = ActiveMoves | ISheeple.Moves.SpecialAttack;
-		if(soundSet)
-			soundSet.Play("special");
+		if (!ActiveAttacks)
+		{
+			if (ValidStache)
+			{
+				ActiveMoves = ActiveMoves | ISheeple.Moves.SpecialAttack;
+				AttackStrength = Stache.SpecialAttackStrength;
+				AttackTimeTillHit = Stache.SpecialAttackHitTime;
+				AttackTimeCooldown = Stache.SpecialAttackCooldown;
+			}
+			if(soundSet)
+				soundSet.Play("special");
+		}
 	}
 
 	void OnBlock()
@@ -200,7 +285,10 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnMove(MFVector direction)
 	{
-		moveDirection = direction * MoveSpeed;
+		if (!ActiveAttacks)
+		{
+			moveDirection = direction * MoveSpeed;
+		}
 	}
 	
 	void OnReceiveAttack(Moves type, float strength)
@@ -213,8 +301,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	@property int Health() { return state.health; }
 
-	@property bool IsAttacking() { return false; }
-	@property bool IsBlocking() { return false; }
+	@property bool IsAttacking() { return ActiveAttacks != ISheeple.Moves.AllAttacks; }
+	@property bool IsBlocking() { return (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }
 	@property bool IsRunning() { return false; }
 
 	private @property float MoveSpeed() { return DefaultMoveSpeed * (IsRunning ? DefaultMoveSpeedRunModifier : 1); }

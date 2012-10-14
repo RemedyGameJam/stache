@@ -4,18 +4,37 @@
     <properties>
       <dimensions x="100" z="30" />
       <surfaces>
-        <surface type="floor" material="MattDamon" />
+        <surface type="floor" material="Grass" />
         <surface type="backwall" material="MattDamon" />
       </surfaces>
       <sounds file="apachesounds" />
       <music track="m1" />
     </properties>
     <entities>
-      <entity type="Combatant" name="Player1" x="40" z="3" facing="right" />
-      <entity type="Combatant" name="Player2" x="60" z="3" facing="left" />
-      <entity type="Combatant" name="Player3" x="40" z="27" facing="right" />
-      <entity type="Combatant" name="Player4" x="60" z="27" facing="left" />
-      <entity type="PaiMei" name="Judge" />
+      <entity type="Combatant" name="Player1" defaultstache="Hulk1" x="40" z="3" facing="right" />
+      <entity type="Combatant" name="Player2" defaultstache="Hulk2" x="60" z="3" facing="left" />
+      <entity type="Combatant" name="Player3" defaultstache="Hulk3" x="40" z="27" facing="right" />
+      <entity type="Combatant" name="Player4" defaultstache="Hulk4" x="60" z="27" facing="left" />
+      <entity type="HulkStache" name="Hulk1" />
+      <entity type="HulkStache" name="Hulk2" />
+      <entity type="HulkStache" name="Hulk3" />
+      <entity type="HulkStache" name="Hulk4" />
+      <entity type="FreddyStache" name="Freddy1" />
+      <entity type="FreddyStache" name="Freddy2" />
+      <entity type="FreddyStache" name="Freddy3" />
+      <entity type="FreddyStache" name="Freddy4" />
+      <entity type="PaiMei" name="Judge">
+        <stache_stash>
+          <stache name="Hulk1" />
+          <stache name="Hulk2" />
+          <stache name="Hulk3" />
+          <stache name="Hulk4" />
+          <stache name="Freddy1" />
+          <stache name="Freddy2" />
+          <stache name="Freddy3" />
+          <stache name="Freddy4" />
+        </stache_stash>
+      </entity>
     </entities>
   </arena>
 </root>
