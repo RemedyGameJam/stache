@@ -12,6 +12,7 @@ import fuji.view;
 import fuji.matrix;
 import fuji.system;
 import fuji.font;
+import fuji.sound;
 
 class LoadingScreenState : IState, IRenderable
 {
@@ -24,14 +25,19 @@ class LoadingScreenState : IState, IRenderable
 	{
 		chinese = MFFont_Create("ChineseRocks");
 		mattDamon = MFMaterial_Create("MattDamon");
+		dattMamon = MFSound_Create("datt_mamon");
 
 		halfMessageWidth = MFFont_GetStringWidth(chinese, message, messageHeight, 0, -1, null) * 0.5;
 
 		elapsedTime = 0;
+
+		MFSound_Play(dattMamon, 0);
 	}
 
 	void OnExit()
 	{
+		MFSound_Destroy(dattMamon);
+
 		MFFont_Destroy(chinese);
 		chinese = null;
 
@@ -43,7 +49,7 @@ class LoadingScreenState : IState, IRenderable
 	{
 		elapsedTime += MFSystem_GetTimeDelta();
 
-		if (elapsedTime > 1.5f)
+		if (elapsedTime > 2.2)
 		{
 			owner.SwitchState("ingame");
 		}
@@ -107,6 +113,7 @@ class LoadingScreenState : IState, IRenderable
 	private MFMaterial* mattDamon;
 	private float elapsedTime;
 	private MFFont* chinese;
+	private MFSound* dattMamon;
 
 	private float halfMessageWidth;
 
