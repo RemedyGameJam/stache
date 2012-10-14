@@ -36,6 +36,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	{
 		MFMatrix transform;
 		MFVector prevPosition;
+		int healthMax = DefaultHealth;
 		int health = DefaultHealth;
 		CombatantDirection facing = CombatantDirection.Left;
 		StacheEntity stache = null;
@@ -299,7 +300,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property bool CanAttack() { return true; }
 	@property bool CanBlock() { return true; }
 
-	@property int Health() { return state.health; }
+	@property int Health() { return state.health / state.healthMax; }
 
 	@property bool IsAttacking() { return ActiveAttacks != ISheeple.Moves.AllAttacks; }
 	@property bool IsBlocking() { return (ActiveMoves & ISheeple.Moves.Block) != ISheeple.Moves.None; }
