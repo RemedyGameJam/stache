@@ -80,7 +80,7 @@
       <frame mesh="special5" percent="0.166666" />
       <frame mesh="special6" percent="0.166666" />
     </anim>
-    <anim name="death" time="0.6" loop="1" default="1">
+    <anim name="death" time="0.5" loop="0" default="0">
       <frame mesh="death1" percent="0.333333" />
       <frame mesh="death2" percent="0.333333" />
       <frame mesh="death3" percent="0.333333" />

@@ -22,7 +22,7 @@ interface ISheeple
 	void OnUnblock();
 	void OnMove(MFVector direction);
 
-	void OnReceiveAttack(Moves type, float strength);
+	float OnReceiveAttack(Moves type, float strength);
 
 	@property bool CanMove();
 	@property bool CanAttack();
