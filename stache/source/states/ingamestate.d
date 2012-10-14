@@ -85,7 +85,9 @@ class InGameState : IState
 
 		Game.TimeKeeper.AddMeasureEvent(() {
 			if(roundState == RoundState.Battle)
-				music.SetTrackVolume(uniform(1,3), uniform(0,2) ? 1 : 0);
+				music.SetTrackVolume(1, 1);
+			else
+				music.SetTrackVolume(1, 0);
 		});
 
 		Reset();
@@ -226,15 +228,6 @@ class InGameState : IState
 
 	void OnRenderGUI(MFRect orthoRect)
 	{
-		{
-			string text = format("%.2s - %s", Game.TimeKeeper.SinceMark, cast(int)Game.TimeKeeper.Beat);
-			const(char*) str = text.toStringz;
-			float messageHeight = 150;
-
-			float halfMessageWidth = MFFont_GetStringWidth(chinese, str, messageHeight, 0, -1, null) * 0.5;
-			MFFont_DrawText2f(chinese, 20, 650, 50, MFVector(1, 1, 1, 1), str);
-		}
-
 		renderGUIEvent(orthoRect);
 
 		RenderLifeBars(orthoRect);
