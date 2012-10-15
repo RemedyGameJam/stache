@@ -79,7 +79,6 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		}
 
 		mattDamon = MFMaterial_Create("MattDamon");
-
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -237,6 +236,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property MFMatrix Transform() { return state.transform; }
 	@property MFMatrix Transform(MFMatrix t)	{ return (state.transform = t); }
 	@property string Name() { return name; }
+	@property MFMaterial* Portrait() { return portrait; }
 
 	private @property Position() { return state.transform.t; }
 	private @property Position(MFVector newPos) { return (state.transform.t = newPos); }
@@ -268,6 +268,8 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	private string				name;
 	private string				defaultStache;
+
+	MFMaterial*					portrait;
 
 	/// ISheeple
 

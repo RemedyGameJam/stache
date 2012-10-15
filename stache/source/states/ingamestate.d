@@ -420,13 +420,13 @@ class InGameState : IState
 		MFRect player2 = MFRect(qScreen + 80 - hScreen*0.3,						80, hScreen*0.6, 80);
 		MFRect player3 = MFRect(orthoRect.width - qScreen - 80 - hScreen*0.3,	80, hScreen*0.6, 80);
 
-		RenderLifeBar(orthoRect, player0, false, combatants[0].Health);
-		RenderLifeBar(orthoRect, player1, true, combatants[1].Health);
-		RenderLifeBar(orthoRect, player2, true, combatants[2].Health);
-		RenderLifeBar(orthoRect, player3, false, combatants[3].Health);
+		RenderLifeBar(orthoRect, player0, false, combatants[0].Health, combatants[0].Portrait, combatants[0].Name);
+		RenderLifeBar(orthoRect, player1, true, combatants[1].Health, combatants[1].Portrait, combatants[1].Name);
+		RenderLifeBar(orthoRect, player2, true, combatants[2].Health, combatants[2].Portrait, combatants[2].Name);
+		RenderLifeBar(orthoRect, player3, false, combatants[3].Health, combatants[3].Portrait, combatants[3].Name);
 	}
 
-	void RenderLifeBar(MFRect orthoRect, MFRect r, bool bPortraitOnRight, float health)
+	void RenderLifeBar(MFRect orthoRect, MFRect r, bool bPortraitOnRight, float health, MFMaterial* portrait, const(char[]) name)
 	{
 		float portraitWidth = r.height;
 		float barWidth = r.width - portraitWidth;
@@ -438,20 +438,27 @@ class InGameState : IState
 		{
 			// draw portrait
 			MFPrimitive_DrawUntexturedQuad(r.x + r.width - portraitWidth, r.y, portraitWidth, r.height, MFVector.one, MFMatrix.identity);
-			MFPrimitive_DrawUntexturedQuad(r.x + r.width - portraitWidth + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.black, MFMatrix.identity);
+//			MFPrimitive_DrawUntexturedQuad(r.x + r.width - portraitWidth + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.black, MFMatrix.identity);
+			MFMaterial_SetMaterial(portrait);
+			MFPrimitive_DrawQuad(r.x + r.width - portraitWidth + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.white, 0, 0, 1, 1, MFMatrix.identity);
 
 			// draw lifeBar
 			MFPrimitive_DrawUntexturedQuad(r.x - 2, r.y + barTop - 2, r.width - portraitWidth + 4, barHeight + 4, MFVector.one, MFMatrix.identity);
+			MFPrimitive_DrawUntexturedQuad(r.x, r.y + barTop, r.width - portraitWidth, barHeight, MFVector.black, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x + (r.width - portraitWidth)*(1 - health), r.y + barTop, (r.width - portraitWidth)*health, barHeight, MFVector.red, MFMatrix.identity);
 		}
 		else
 		{
 			// draw portrait
 			MFPrimitive_DrawUntexturedQuad(r.x, r.y, portraitWidth, r.height, MFVector.one, MFMatrix.identity);
-			MFPrimitive_DrawUntexturedQuad(r.x + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.black, MFMatrix.identity);
+//			MFPrimitive_DrawUntexturedQuad(r.x + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.black, MFMatrix.identity);
+
+			MFMaterial_SetMaterial(portrait);
+			MFPrimitive_DrawQuad(r.x + 4, r.y + 4, portraitWidth - 8, r.height - 8, MFVector.white, 0, 0, 1, 1, MFMatrix.identity);
 
 			// draw lifeBar
 			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth - 2, r.y + barTop - 2, r.width - portraitWidth + 4, barHeight + 4, MFVector.one, MFMatrix.identity);
+			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth, r.y + barTop, r.width - portraitWidth, barHeight, MFVector.black, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth, r.y + barTop, (r.width - portraitWidth) * health, barHeight, MFVector.red, MFMatrix.identity);
 		}
 	}
