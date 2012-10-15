@@ -4,6 +4,8 @@ public import stache.entity.stache;
 
 class MagnumStache : StacheEntity
 {
+	@property string CharacterName()			{ return "Magnum P.I."; }
+	@property string PortraitFilename()			{ return "tom"; }
 	@property string ModelFilename()			{ return "magnum_anims.xml"; }
 	@property string SoundsetFilename()			{ return "player2"; }
 

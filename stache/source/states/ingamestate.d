@@ -420,10 +420,10 @@ class InGameState : IState
 		MFRect player2 = MFRect(qScreen + 80 - hScreen*0.3,						80, hScreen*0.6, 80);
 		MFRect player3 = MFRect(orthoRect.width - qScreen - 80 - hScreen*0.3,	80, hScreen*0.6, 80);
 
-		RenderLifeBar(orthoRect, player0, false, combatants[0].Health, combatants[0].Portrait, combatants[0].Name);
-		RenderLifeBar(orthoRect, player1, true, combatants[1].Health, combatants[1].Portrait, combatants[1].Name);
-		RenderLifeBar(orthoRect, player2, true, combatants[2].Health, combatants[2].Portrait, combatants[2].Name);
-		RenderLifeBar(orthoRect, player3, false, combatants[3].Health, combatants[3].Portrait, combatants[3].Name);
+		RenderLifeBar(orthoRect, player0, false, combatants[0].Health, combatants[0].Portrait, combatants[0].CharacterName);
+		RenderLifeBar(orthoRect, player1, true, combatants[1].Health, combatants[1].Portrait, combatants[1].CharacterName);
+		RenderLifeBar(orthoRect, player2, true, combatants[2].Health, combatants[2].Portrait, combatants[2].CharacterName);
+		RenderLifeBar(orthoRect, player3, false, combatants[3].Health, combatants[3].Portrait, combatants[3].CharacterName);
 	}
 
 	void RenderLifeBar(MFRect orthoRect, MFRect r, bool bPortraitOnRight, float health, MFMaterial* portrait, const(char[]) name)

@@ -4,6 +4,8 @@ public import stache.entity.stache;
 
 class FreddyStache : StacheEntity
 {
+	@property string CharacterName()			{ return "Freddie Mercury"; }
+	@property string PortraitFilename()			{ return "freddie"; }
 	@property string ModelFilename()			{ return "freddy_anims.xml"; }
 	@property string SoundsetFilename()			{ return "player1"; }
 

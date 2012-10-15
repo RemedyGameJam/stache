@@ -4,6 +4,8 @@ public import stache.entity.stache;
 
 class DictatorStache : StacheEntity
 {
+	@property string CharacterName()			{ return "Great Dictator"; }
+	@property string PortraitFilename()			{ return "dictator2"; }
 	@property string ModelFilename()			{ return "dictator_anims.xml"; }
 	@property string SoundsetFilename()			{ return "player2"; }
 

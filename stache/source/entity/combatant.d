@@ -236,7 +236,9 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	@property MFMatrix Transform() { return state.transform; }
 	@property MFMatrix Transform(MFMatrix t)	{ return (state.transform = t); }
 	@property string Name() { return name; }
-	@property MFMaterial* Portrait() { return portrait; }
+
+	@property string CharacterName() { if (ValidStache) return Stache.CharacterName; return Name; }
+	@property MFMaterial* Portrait() { if (ValidStache) return Stache.Portrait; return null; }
 
 	private @property Position() { return state.transform.t; }
 	private @property Position(MFVector newPos) { return (state.transform.t = newPos); }
@@ -269,7 +271,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	private string				name;
 	private string				defaultStache;
 
-	MFMaterial*					portrait;
+	private MFMaterial*			portrait;
 
 	/// ISheeple
 

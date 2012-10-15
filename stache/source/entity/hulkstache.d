@@ -4,6 +4,8 @@ public import stache.entity.stache;
 
 class HulkStache : StacheEntity
 {
+	@property string CharacterName()		{ return "The Hulkster"; }
+	@property string PortraitFilename()		{ return "hulk"; }
 	@property string ModelFilename()		{ return "hogan_anims.xml"; }
 	@property string SoundsetFilename()		{ return "player1"; }
 

@@ -11,6 +11,7 @@ import stache.i.renderable;
 import stache.util.meshanimator;
 
 import std.conv;
+import std.string;
 
 interface IStache
 {
@@ -19,8 +20,8 @@ interface IStache
 	void OnDetach(IEntity entity);
 
 	@property string CharacterName();
-	@property string ModelFilename();
 	@property string PortraitFilename();
+	@property string ModelFilename();
 	@property string SoundsetFilename();
 
 	@property float LightAttackStrength();
@@ -62,6 +63,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 		animator = new MeshAnimator(ModelFilename);
 		soundSet = new SoundSet(SoundsetFilename);
+		portrait = MFMaterial_Create(PortraitFilename.toStringz);
 	}
 
 	void OnResolve(IEntity[string] loadedEntities)
@@ -77,6 +79,9 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 	void OnDestroy()
 	{
+		MFMaterial_Destroy(portrait);
+		portrait = null;
+
 		animator.OnDestroy();
 		animator = null;
 	}
