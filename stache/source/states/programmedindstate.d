@@ -55,7 +55,7 @@ class ProgrammedInDState : IState, IRenderable
 	///IRenderable
 	void OnRenderWorld()
 	{
-		MFRenderer_SetClearColour(0.0, 0.0, 0.0, 1.0);
+		MFRenderer_SetClearColour(1, 1, 1, 1);
 		MFRenderer_ClearScreen(MFClearScreenFlags.All);
 
 	}
@@ -81,7 +81,7 @@ class ProgrammedInDState : IState, IRenderable
 		}
 		MFEnd();*/
 
-		MFPrimitive_DrawQuad(50, 50, 50, 50, MFVector.one, 0, 0, 1, 1, MFMatrix.identity);
+		MFPrimitive_DrawQuad(100, 180, 300, 300, MFVector.one, 0, 0, 1, 1, MFMatrix.identity);
 
 		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 360, messageHeight, MFVector(0, 0, 0, 1), message);
 		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth - 1, 360, messageHeight, MFVector(1, 1, 1, 1), message);
