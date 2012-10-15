@@ -106,7 +106,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 	void OnReset()
 	{
 		state = initialState;
-		UpdateFacing();
+		UpdateFacing(state.transform);
 	}
 
 	void OnDestroy()
@@ -132,7 +132,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			else
 				state.facing = CombatantDirection.Left;
 
-			UpdateFacing();
+			UpdateFacing(state.transform);
 
 			moveDirection *= 0.75;
 
@@ -146,9 +146,10 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		}
 	}
 
-	private void UpdateFacing()
+	private void UpdateFacing(ref MFMatrix t, float angleInDegrees = 20)
 	{
-		float angle = MFDeg2Rad!60;
+		float angle = angleInDegrees * 0.0174532925;
+
 		if (state.facing == CombatantDirection.Left)
 			angle *= -1;
 
@@ -156,11 +157,17 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 		normalisedDir.x = sin(angle);
 		normalisedDir.z = -cos(angle);
 
+//		MFVector normalisedDir = MFVector(0, 0, -1);
+
+		float xScale = 1;
+		if (state.facing == CombatantDirection.Right)
+			xScale = -1;
+
 //		MFVector normalisedDir = normalise(moveDirection);
 
-		state.transform.x = cross3(MFVector.up, normalisedDir) * -1;
-		state.transform.y = MFVector.up * 1;
-		state.transform.z = normalisedDir * -1;
+		t.x = cross3(MFVector.up, normalisedDir) * xScale;
+		t.y = MFVector.up * 1;
+		t.z = normalisedDir * -1;
 	}
 
 	void OnPostUpdate()
@@ -438,12 +445,15 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 			MFPrimitive(PrimType.TriList | PrimType.Prelit, 0);
 
 			MFMatrix shieldTransform = state.transform;
+			shieldTransform.t.y += CollisionParameters.y;
+
+			UpdateFacing(shieldTransform, 60);
+
 			shieldTransform.x *= 3;
 			shieldTransform.y *= 3;
 			shieldTransform.z *= 3;
-			shieldTransform.t += shieldTransform.z * (-CollisionParameters.z * 0.5);
 
-			shieldTransform.t.y += CollisionParameters.y;
+			shieldTransform.t += shieldTransform.z * (-CollisionParameters.z * 0.5);
 
 			MFSetMatrix(shieldTransform);
 			MFBegin(18);
