@@ -85,8 +85,8 @@ class StateMachine
 
 				rect.x = 0.0f;
 				rect.y = 0.0f;
-				rect.height = display.height;
-				rect.width = rect.height * MFDisplay_GetNativeAspectRatio();
+				rect.width = 1280; //display.height * MFDisplay_GetNativeAspectRatio();
+				rect.height = 720; //display.height;
 
 				MFView_SetOrtho(&rect);
 

@@ -12,6 +12,7 @@ import fuji.view;
 import fuji.matrix;
 
 import stache.i.statemachine;
+import stache.states.programmedindstate;
 import stache.states.loadingscreenstate;
 import stache.states.mainmenustate;
 import stache.states.ingamestate;
@@ -211,13 +212,15 @@ class Game
 
 	void Init()
 	{
+
 		timer = new Timer();
 
+		state.AddState("programmedind", new ProgrammedInDState);
 		state.AddState("loading", new LoadingScreenState);
 		state.AddState("mainmenu", new MainMenuState);
 		state.AddState("ingame", new InGameState);
 
-		state.SwitchState("loading");
+		state.SwitchState("programmedind");
 	}
 
 	void Deinit()

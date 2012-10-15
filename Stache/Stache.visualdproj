@@ -240,6 +240,7 @@
     <File path="source\states\ingamestate.d" />
     <File path="source\states\loadingscreenstate.d" />
     <File path="source\states\mainmenustate.d" />
+    <File path="source\states\programmedindstate.d" />
    </Folder>
    <Folder name="thinkers">
     <File path="source\thinkers\localplayer.d" />

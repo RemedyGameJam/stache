@@ -4,6 +4,7 @@ import core.runtime;
 import core.sys.windows.windows;
 
 import fuji.system;
+import fuji.display;
 
 import stache.game;
 
@@ -41,11 +42,17 @@ int myWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int
 
 	Game game = Game.Instance;
 
+	MFRect failure;
+
+	MFDisplay_GetNativeRes(&failure);
+
 	game.mfInitParams.hInstance = hInstance;
 	game.mfInitParams.pCommandLine = lpCmdLine;
 	game.mfInitParams.hideSystemInfo = true;
-	game.mfInitParams.display.displayRect.x = 100;
-	game.mfInitParams.display.displayRect.y = 100;
+
+	game.mfInitParams.display.displayRect.width = failure.width;
+	game.mfInitParams.display.displayRect.height = failure.height;
+	game.mfInitParams.display.bFullscreen = true;
 	game.mfInitParams.pAppTitle = "Matt Damon presents: Stache!".ptr;
 
 	MFSystem_RegisterSystemCallback(MFCallback.FileSystemInit, &Game.Static_InitFileSystem);
