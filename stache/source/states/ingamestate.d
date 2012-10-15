@@ -446,6 +446,9 @@ class InGameState : IState
 			MFPrimitive_DrawUntexturedQuad(r.x - 2, r.y + barTop - 2, r.width - portraitWidth + 4, barHeight + 4, MFVector.one, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x, r.y + barTop, r.width - portraitWidth, barHeight, MFVector.black, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x + (r.width - portraitWidth)*(1 - health), r.y + barTop, (r.width - portraitWidth)*health, barHeight, MFVector.red, MFMatrix.identity);
+
+			float messageWidth = MFFont_GetStringWidth(chinese, name.toStringz, barHeight, 0, -1, null);
+			MFFont_DrawText2f(chinese, r.x + (r.width - portraitWidth) - messageWidth - 10, r.y + barTop, barHeight, MFVector.white, name.toStringz);
 		}
 		else
 		{
@@ -460,6 +463,8 @@ class InGameState : IState
 			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth - 2, r.y + barTop - 2, r.width - portraitWidth + 4, barHeight + 4, MFVector.one, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth, r.y + barTop, r.width - portraitWidth, barHeight, MFVector.black, MFMatrix.identity);
 			MFPrimitive_DrawUntexturedQuad(r.x + portraitWidth, r.y + barTop, (r.width - portraitWidth) * health, barHeight, MFVector.red, MFMatrix.identity);
+
+			MFFont_DrawText2f(chinese, r.x + portraitWidth + 10, r.y + barTop, barHeight, MFVector.white, name.toStringz);
 		}
 	}
 
