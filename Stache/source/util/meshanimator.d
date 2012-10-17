@@ -27,7 +27,7 @@ class MeshAnimator
 		float timeToNextFrame = 0;
 		int frameIndex = 0;
 
-		@property MFModel* Mesh() { int lookup = frameIndex; if (lookup >= frames.length) lookup = frames.length - 1; return frames[lookup].model; }
+		@property MFModel* Mesh() { int lookup = frameIndex; if (lookup >= cast(int)frames.length) lookup = cast(int)frames.length - 1; return frames[lookup].model; }
 	}
 
 	class Mesh

@@ -136,7 +136,7 @@ class InGameState : IState
 		playerRanking = new Ranking[combatants.length];
 		foreach(i, c; combatants)
 		{
-			playerRanking[i].player = i;
+			playerRanking[i].player = cast(int)i;
 			playerRanking[i].score = (c.Health > 0 ? 100 : 0) + c.DamageDealt + c.Health*0.5;
 		}
 		sort!("a.score > b.score")(playerRanking);

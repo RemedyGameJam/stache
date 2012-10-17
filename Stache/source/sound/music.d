@@ -84,7 +84,7 @@ class Music
 	private void ResetVolumes()
 	{
 		foreach(i, s; streams)
-			SetTrackVolume(i, s.vol);
+			SetTrackVolume(cast(int)i, s.vol);
 	}
 
 	bool bPlaying;

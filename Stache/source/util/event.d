@@ -25,7 +25,7 @@ struct EventTemplate( T... )
 	void subscribe( Delegate eventHandler ) { m_subscribers ~= eventHandler; }
 	void unsubscribe( Delegate eventHandler )
 	{
-		int index = countUntil(m_subscribers, eventHandler);
+		int index = cast(int)countUntil(m_subscribers, eventHandler);
 		if (index != -1)
 			remove(m_subscribers, index);
 	}

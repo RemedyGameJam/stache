@@ -201,12 +201,12 @@ class Game
 		mountData.priority = MFMountPriority.Normal;
 		mountData.flags = MFMountFlags.FlattenDirectoryStructure | MFMountFlags.Recursive;
 		mountData.pMountpoint = "data";
-		mountData.pPath = MFFile_SystemPath("../Data/");
+		mountData.pPath = MFFile_SystemPath("../data/");
 		MFFileSystem_Mount(hNative, mountData);
 
 		mountData.flags = MFMountFlags.DontCacheTOC;
 		mountData.pMountpoint = "cache";
-		mountData.pPath = MFFile_SystemPath("../Data/Cache");
+		mountData.pPath = MFFile_SystemPath("../data/Cache");
 		MFFileSystem_Mount(hNative, mountData);
 	}
 

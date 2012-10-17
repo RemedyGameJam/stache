@@ -138,7 +138,7 @@ class CollisionManager
 
 	void RemoveCollider(ICollider collider)
 	{
-		int index = countUntil(colliders, collider);
+		int index = cast(int)countUntil(colliders, collider);
 		if (index != -1)
 			remove(colliders, index);
 	}

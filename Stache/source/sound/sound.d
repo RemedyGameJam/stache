@@ -60,7 +60,7 @@ class SoundSet
 		if(groups[group].length == 0)
 			return 0;
 
-		int i = uniform(0, groups[group].length);
+		int i = cast(int)uniform(0, groups[group].length);
 
 		MFSoundInfo info;
 		MFSound_GetSoundInfo(groups[group][i].sound, &info);

@@ -50,7 +50,7 @@ class LocalPlayer : IThinker
 				if (padsClaimed[devID] is null && MFInput_IsReady(MFInputDevice.Gamepad, playerIndex))
 				{
 					padsClaimed[devID] = this;
-					joypadDeviceID = devID;
+					joypadDeviceID = cast(int)devID;
 					break;
 				}
 			}
@@ -63,7 +63,7 @@ class LocalPlayer : IThinker
 				if (keyboardsClaimed[keyID] is null)
 				{
 					keyboardsClaimed[keyID] = this;
-					keyboardDeviceID = keyID;
+					keyboardDeviceID = cast(int)keyID;
 					break;
 				}
 			}
