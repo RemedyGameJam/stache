@@ -10,9 +10,10 @@
 *.lai
 *.la
 *.a
-*/intermediate/*
+intermediate/
+obj/
+ipch/
 *.dll
-*/ipch/*
 *.suo
 *.opensdf
 *.sdf
@@ -21,4 +22,5 @@
 *.exe_cv
 *.pdb
 *.map
-*/Cache/*
+Cache/
+
