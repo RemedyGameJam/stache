@@ -36,7 +36,7 @@ class ProgrammedInDState : IState, IRenderable
 		MFFont_Destroy(chinese);
 		chinese = null;
 
-		MFMaterial_Destroy(dMan);
+		MFMaterial_Release(dMan);
 		dMan = null;
 	}
 

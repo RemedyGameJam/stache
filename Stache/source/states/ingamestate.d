@@ -97,7 +97,7 @@ class InGameState : IState
 	{
 		foreach(mat; materials)
 		{
-			MFMaterial_Destroy(mat.mat);
+			MFMaterial_Release(mat.mat);
 		}
 
 		camera = null;
@@ -162,9 +162,6 @@ class InGameState : IState
 			MFMaterial_SetMaterial(materials["floor"].mat);
 
 			MFPrimitive(PrimType.TriStrip | PrimType.Prelit, 0);
-			MFMatrix ident = MFMatrix.identity;
-
-			MFSetMatrix(ident);
 
 			foreach(offsetX; -3 .. 3)
 			{
@@ -387,7 +384,7 @@ class InGameState : IState
 			return 0;
 	}
 
-	void RenderTime(MFRect orthoRect)
+	void RenderTime(ref const(MFRect) orthoRect)
 	{
 		float roundTimer = RoundTimeRemaining;
 
@@ -410,7 +407,7 @@ class InGameState : IState
 		MFFont_DrawText2f(chinese, orthoRect.width * 0.5 - halfMessageWidth, 80 - messageHeight*0.5, messageHeight, MFVector(1, c, c, 1), str);
 	}
 
-	void RenderLifeBars(MFRect orthoRect)
+	void RenderLifeBars(ref const(MFRect) orthoRect)
 	{
 		float hScreen = orthoRect.width*0.5;
 		float qScreen = hScreen*0.5 * 0.9;
@@ -426,7 +423,7 @@ class InGameState : IState
 		RenderLifeBar(orthoRect, player3, false, combatants[3].Health, combatants[3].Portrait, combatants[3].CharacterName);
 	}
 
-	void RenderLifeBar(MFRect orthoRect, MFRect r, bool bPortraitOnRight, float health, MFMaterial* portrait, const(char[]) name)
+	void RenderLifeBar(ref const(MFRect) orthoRect, ref const(MFRect) r, bool bPortraitOnRight, float health, MFMaterial* portrait, const(char[]) name)
 	{
 		float portraitWidth = r.height;
 		float barWidth = r.width - portraitWidth;

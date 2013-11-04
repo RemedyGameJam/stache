@@ -79,7 +79,7 @@ class StacheEntity : IEntity, IStache, IRenderable
 
 	void OnDestroy()
 	{
-		MFMaterial_Destroy(portrait);
+		MFMaterial_Release(portrait);
 		portrait = null;
 
 		animator.OnDestroy();

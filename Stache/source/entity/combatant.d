@@ -111,7 +111,7 @@ class Combatant : ISheeple, IEntity, IRenderable, ICollider
 
 	void OnDestroy()
 	{
-		MFMaterial_Destroy(mattDamon);
+		MFMaterial_Release(mattDamon);
 	}
 
 	void OnUpdate()
